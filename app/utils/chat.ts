@@ -198,6 +198,7 @@ export function stream(
   function animateResponseText() {
     if (finished || controller.signal.aborted) {
       responseText += remainText;
+
       console.log("[Response Animation] finished");
       if (responseText?.length === 0) {
         options.onError?.(new Error("empty response from server"));
@@ -211,6 +212,12 @@ export function stream(
       responseText += fetchText;
       remainText = remainText.slice(fetchCount);
       options.onUpdate?.(responseText, fetchText);
+
+      console.log("[Response Animation] update", {
+        responseText,
+        fetchText,
+        remainText,
+      });
     }
 
     requestAnimationFrame(animateResponseText);

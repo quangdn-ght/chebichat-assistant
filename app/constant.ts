@@ -21,7 +21,7 @@ export const BAIDU_OATUH_URL = `${BAIDU_BASE_URL}/oauth/2.0/token`;
 
 export const BYTEDANCE_BASE_URL = "https://ark.cn-beijing.volces.com";
 
-export const ALIBABA_BASE_URL = "https://dashscope.aliyuncs.com/api/";
+export const ALIBABA_BASE_URL = "https://dashscope-intl.aliyuncs.com";
 
 export const TENCENT_BASE_URL = "https://hunyuan.tencentcloudapi.com";
 
@@ -38,6 +38,9 @@ export const SILICONFLOW_BASE_URL = "https://api.siliconflow.cn";
 
 export const CACHE_URL_PREFIX = "/api/cache";
 export const UPLOAD_URL = `${CACHE_URL_PREFIX}/upload`;
+
+export const ALIBABA_APP_ID = "95072bcf71bf4469a25c45c31e76f37a"; // default alibaba app id, used for some models
+export const MODEL_PROVIDER = "alibaba";
 
 export enum Path {
   Home = "/",
@@ -222,10 +225,13 @@ export const ByteDance = {
 export const Alibaba = {
   ExampleEndpoint: ALIBABA_BASE_URL,
   ChatPath: (modelName: string) => {
+    const URL = `api/v1/apps/${ALIBABA_APP_ID}/completion`;
+
     if (modelName.includes("vl") || modelName.includes("omni")) {
       return "v1/services/aigc/multimodal-generation/generation";
     }
-    return `v1/services/aigc/text-generation/generation`;
+    // return `v1/services/aigc/text-generation/generation`;
+    return URL;
   },
 };
 
@@ -681,20 +687,21 @@ const siliconflowModels = [
 
 let seq = 1000; // 内置的模型序号生成器从1000开始
 export const DEFAULT_MODELS = [
-  ...openaiModels.map((name) => ({
+  ...alibabaModes.map((name) => ({
     name,
-    available: true,
-    sorted: seq++, // Global sequence sort(index)
+    available: true, // 默认可用
+    sorted: seq++,
     provider: {
-      id: "openai",
-      providerName: "OpenAI",
-      providerType: "openai",
-      sorted: 1, // 这里是固定的，确保顺序与之前内置的版本一致
+      id: "alibaba",
+      providerName: "Alibaba",
+      providerType: "alibaba",
+      sorted: 1,
     },
   })),
+
   ...openaiModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "azure",
@@ -705,7 +712,7 @@ export const DEFAULT_MODELS = [
   })),
   ...googleModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "google",
@@ -716,7 +723,7 @@ export const DEFAULT_MODELS = [
   })),
   ...anthropicModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "anthropic",
@@ -727,7 +734,7 @@ export const DEFAULT_MODELS = [
   })),
   ...baiduModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "baidu",
@@ -738,7 +745,7 @@ export const DEFAULT_MODELS = [
   })),
   ...bytedanceModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "bytedance",
@@ -747,20 +754,22 @@ export const DEFAULT_MODELS = [
       sorted: 6,
     },
   })),
-  ...alibabaModes.map((name) => ({
+
+  ...openaiModels.map((name) => ({
     name,
-    available: true,
-    sorted: seq++,
+    available: false,
+    sorted: seq++, // Global sequence sort(index)
     provider: {
-      id: "alibaba",
-      providerName: "Alibaba",
-      providerType: "alibaba",
-      sorted: 7,
+      id: "openai",
+      providerName: "OpenAI",
+      providerType: "openai",
+      sorted: 7, // 这里是固定的，确保顺序与之前内置的版本一致
     },
   })),
+
   ...tencentModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "tencent",
@@ -771,7 +780,7 @@ export const DEFAULT_MODELS = [
   })),
   ...moonshotModes.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "moonshot",
@@ -782,7 +791,7 @@ export const DEFAULT_MODELS = [
   })),
   ...iflytekModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "iflytek",
@@ -793,7 +802,7 @@ export const DEFAULT_MODELS = [
   })),
   ...xAIModes.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "xai",
@@ -804,7 +813,7 @@ export const DEFAULT_MODELS = [
   })),
   ...chatglmModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "chatglm",
@@ -815,7 +824,7 @@ export const DEFAULT_MODELS = [
   })),
   ...deepseekModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "deepseek",
@@ -826,7 +835,7 @@ export const DEFAULT_MODELS = [
   })),
   ...siliconflowModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     sorted: seq++,
     provider: {
       id: "siliconflow",

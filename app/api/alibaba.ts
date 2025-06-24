@@ -1,14 +1,8 @@
 import { getServerSideConfig } from "@/app/config/server";
-import {
-  ALIBABA_BASE_URL,
-  ApiPath,
-  ModelProvider,
-  ServiceProvider,
-} from "@/app/constant";
+import { ALIBABA_BASE_URL, ApiPath, ModelProvider } from "@/app/constant";
 import { prettyObject } from "@/app/utils/format";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/app/api/auth";
-import { isModelNotavailableInServer } from "@/app/utils/model";
 
 const serverConfig = getServerSideConfig();
 
@@ -83,28 +77,36 @@ async function request(req: NextRequest) {
   if (serverConfig.customModels && req.body) {
     try {
       const clonedBody = await req.text();
-      fetchOptions.body = clonedBody;
+      let jsonBody: any = {};
 
-      const jsonBody = JSON.parse(clonedBody) as { model?: string };
+      try {
+        jsonBody = JSON.parse(clonedBody);
+        delete jsonBody.model; // Remove the model key
+        fetchOptions.body = JSON.stringify(jsonBody);
+      } catch (e) {
+        fetchOptions.body = clonedBody; // fallback if not JSON
+      }
+
+      console.log("[Alibaba] request body", fetchOptions.body);
 
       // not undefined and is false
-      if (
-        isModelNotavailableInServer(
-          serverConfig.customModels,
-          jsonBody?.model as string,
-          ServiceProvider.Alibaba as string,
-        )
-      ) {
-        return NextResponse.json(
-          {
-            error: true,
-            message: `you are not allowed to use ${jsonBody?.model} model`,
-          },
-          {
-            status: 403,
-          },
-        );
-      }
+      // if (
+      //   isModelNotavailableInServer(
+      //     serverConfig.customModels,
+      //     jsonBody?.model as string,
+      //     ServiceProvider.Alibaba as string,
+      //   )
+      // ) {
+      //   return NextResponse.json(
+      //     {
+      //       error: true,
+      //       message: `you are not allowed to use ${jsonBody?.model} model`,
+      //     },
+      //     {
+      //       status: 403,
+      //     },
+      //   );
+      // }
     } catch (e) {
       console.error(`[Alibaba] filter`, e);
     }
