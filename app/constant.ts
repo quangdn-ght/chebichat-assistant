@@ -224,12 +224,19 @@ export const ByteDance = {
 
 export const Alibaba = {
   ExampleEndpoint: ALIBABA_BASE_URL,
-  ChatPath: (modelName: string) => {
-    const URL = `api/v1/apps/${ALIBABA_APP_ID}/completion`;
 
-    if (modelName.includes("vl") || modelName.includes("omni")) {
-      return "v1/services/aigc/multimodal-generation/generation";
-    }
+  ChatPath: (modelName: string) => {
+    // CHUYEN DUNG CHO ALIBABA APP ID
+    // const URL = `api/v1/apps/${ALIBABA_APP_ID}/completion`;
+    console.log("[Alibaba] modelName", modelName);
+
+    // https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions
+
+    const URL = "compatible-mode/v1/chat/completions";
+
+    // if (modelName.includes("vl") || modelName.includes("omni")) {
+    //   return "v1/services/aigc/multimodal-generation/generation";
+    // }
     // return `v1/services/aigc/text-generation/generation`;
     return URL;
   },

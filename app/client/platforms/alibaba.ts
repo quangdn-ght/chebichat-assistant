@@ -169,57 +169,29 @@ export class QwenApi implements LLMApi {
           tools as any,
           funcs,
           controller,
-          // Updated SSE parse callback for new JSON structure
+          // SSE parse callback for OpenAI-style streaming
           (text: string, runTools: ChatMessageTool[]) => {
-            // Parse the JSON response
-            const json = JSON.parse(text);
-
-            console.log("[Alibaba] SSE response", json);
-
-            // Extract content from the new structure
-            const output = json.output;
-            const content = output?.text ?? "";
-            const reasoning = output?.reasoning_content ?? ""; // If exists in your new structure
-
-            // If both are empty, return default
-            if (
-              (!reasoning || reasoning.length === 0) &&
-              (!content || content.length === 0)
-            ) {
-              return {
-                isThinking: false,
-                content: "",
-              };
+            // Each `text` is a line like: data: {...}
+            let json: any;
+            try {
+              json = JSON.parse(text);
+            } catch {
+              return { isThinking: false, content: "" };
             }
+            const delta = json.choices?.[0]?.delta;
+            const content = delta?.content ?? "";
 
-            // If reasoning_content exists, treat as "thinking"
-            if (reasoning && reasoning.length > 0) {
-              return {
-                isThinking: true,
-                content: reasoning,
-              };
-            }
-            // Otherwise, return the main content
-            else if (content && content.length > 0) {
-              return {
-                isThinking: false,
-                content: content,
-              };
-            }
-
-            // Fallback
+            // You can accumulate content outside if needed
             return {
               isThinking: false,
-              content: "",
+              content,
             };
           },
-          // Hàm xử lý message liên quan đến tool_call và kết quả trả về từ tool_call
           (
             requestPayload: RequestPayload,
             toolCallMessage: any,
             toolCallResult: any[],
           ) => {
-            // Thêm message gọi tool và kết quả trả về vào cuối mảng messages trong payload gửi lên API
             requestPayload?.input?.messages?.splice(
               requestPayload?.input?.messages?.length,
               0,
@@ -227,7 +199,20 @@ export class QwenApi implements LLMApi {
               ...toolCallResult,
             );
           },
-          options, // Các tuỳ chọn khác cho hàm streamWithThink
+          {
+            ...options,
+            // Accumulate and render result as it streams
+            onUpdate: (() => {
+              let accumulated = "";
+              return (chunk: string) => {
+                accumulated += chunk;
+                options.onUpdate?.(accumulated, chunk);
+              };
+            })(),
+            onFinish: (final: string, res: any) => {
+              options.onFinish?.(final, res);
+            },
+          },
         );
       } else {
         const res = await fetch(chatPath, chatPayload);

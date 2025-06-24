@@ -36,7 +36,9 @@ async function request(req: NextRequest) {
   const controller = new AbortController();
 
   // alibaba use base url or just remove the path
-  let path = `${req.nextUrl.pathname}`.replaceAll(ApiPath.Alibaba, "");
+  let path = `${req.nextUrl.pathname}`
+    .replaceAll(ApiPath.Alibaba, "")
+    .replace("/api", "");
 
   let baseUrl = serverConfig.alibabaUrl || ALIBABA_BASE_URL;
 
@@ -59,6 +61,9 @@ async function request(req: NextRequest) {
   );
 
   const fetchUrl = `${baseUrl}${path}`;
+
+  console.log("[Alibaba] fetchUrl", fetchUrl);
+
   const fetchOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
@@ -81,13 +86,54 @@ async function request(req: NextRequest) {
 
       try {
         jsonBody = JSON.parse(clonedBody);
-        delete jsonBody.model; // Remove the model key
+
+        // Move input.messages to messages at the root level if present
+        if (jsonBody.input && Array.isArray(jsonBody.input.messages)) {
+          jsonBody.messages = jsonBody.input.messages;
+
+          // Remove input.messages to avoid duplication
+          delete jsonBody.input;
+
+          jsonBody.stream = true;
+        }
+
+        const current_model = jsonBody?.model;
+        console.log("[Alibaba] custom models", current_model);
+
+        //kiem tra xem model co phai la qwen-vl hay khong (vision model)
+        if (current_model && current_model.startsWith("qwen-vl")) {
+          console.log("[Alibaba] current model is qwen-vl");
+          console.log("xu ly hinh anh trong message");
+
+          // Reformat image objects in messages
+          if (Array.isArray(jsonBody.messages)) {
+            jsonBody.messages = jsonBody.messages.map((msg: any) => {
+              if (Array.isArray(msg.content)) {
+                msg.content = msg.content.map((item: any) => {
+                  if (item && typeof item === "object" && "image" in item) {
+                    return {
+                      type: "image_url",
+                      image_url: {
+                        url: item.image,
+                      },
+                    };
+                  }
+                  return item;
+                });
+              }
+              return msg;
+            });
+          }
+        }
+
+        // console.log("[Alibaba] request body json", jsonBody);
+
         fetchOptions.body = JSON.stringify(jsonBody);
       } catch (e) {
         fetchOptions.body = clonedBody; // fallback if not JSON
       }
 
-      console.log("[Alibaba] request body", fetchOptions.body);
+      // console.log("[Alibaba] request body", fetchOptions.body);
 
       // not undefined and is false
       // if (
