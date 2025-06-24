@@ -174,7 +174,7 @@ export class QwenApi implements LLMApi {
             // Parse the JSON response
             const json = JSON.parse(text);
 
-            // console.log("[Alibaba] SSE response", json);
+            console.log("[Alibaba] SSE response", json);
 
             // Extract content from the new structure
             const output = json.output;
