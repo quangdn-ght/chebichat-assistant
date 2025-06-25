@@ -131,6 +131,9 @@ export const useSyncStore = createPersistStore(
           ) as AppState;
           mergeAppState(localState, parsedRemoteState);
           setLocalAppState(localState);
+
+          console.log("[Sync] Merged remote state with local state");
+          console.log("Dong bo thanh cong", provider, config.username);
         }
       } catch (e) {
         console.log("[Sync] failed to get remote state", e);

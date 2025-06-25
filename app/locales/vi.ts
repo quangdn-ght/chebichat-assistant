@@ -471,6 +471,9 @@ const vi: PartialLocaleType = {
         "Tóm tắt nội dung cuộc trò chuyện một cách ngắn gọn, dùng làm gợi ý ngữ cảnh cho các lần sau, giữ trong vòng 200 từ",
     },
   },
+  Discovery: {
+    Name: "Tìm kiêm",
+  },
   Copy: {
     Success: "Đã sao chép vào clipboard",
     Failed: "Sao chép thất bại, vui lòng cấp quyền clipboard",

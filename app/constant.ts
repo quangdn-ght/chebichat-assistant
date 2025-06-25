@@ -1,3 +1,7 @@
+import { ALIBABA_BASE_URL, ALIBABA_PATH } from "./chebichatConstant";
+
+export * from "./chebichatConstant";
+
 export const OWNER = "ChatGPTNextWeb";
 export const REPO = "ChatGPT-Next-Web";
 export const REPO_URL = `https://github.com/${OWNER}/${REPO}`;
@@ -20,8 +24,6 @@ export const BAIDU_BASE_URL = "https://aip.baidubce.com";
 export const BAIDU_OATUH_URL = `${BAIDU_BASE_URL}/oauth/2.0/token`;
 
 export const BYTEDANCE_BASE_URL = "https://ark.cn-beijing.volces.com";
-
-export const ALIBABA_BASE_URL = "https://dashscope-intl.aliyuncs.com";
 
 export const TENCENT_BASE_URL = "https://hunyuan.tencentcloudapi.com";
 
@@ -60,7 +62,7 @@ export enum Path {
 export enum ApiPath {
   Cors = "",
   Azure = "/api/azure",
-  OpenAI = "/api/openai",
+  OpenAI = "/api/alibaba", // Use Alibaba path for OpenAI API
   Anthropic = "/api/anthropic",
   Google = "/api/google",
   Baidu = "/api/baidu",
@@ -109,12 +111,6 @@ export const ACCESS_CODE_PREFIX = "nk-";
 
 export const LAST_INPUT_KEY = "last-input";
 export const UNFINISHED_INPUT = (id: string) => "unfinished-input-" + id;
-
-// The key used to store the last chat ID in local storage
-export const UPSTASH_ENDPOINT = "https://fine-baboon-52580.upstash.io";
-export const UPSTASH_APIKEY =
-  "Ac1kAAIjcDE2YjM4YmY3OGI4YzA0MTU2YjZhNmQyNzc5Yzc3NzEwYnAxMA";
-export const STORAGE_KEY = "chebichat-backup";
 
 export const REQUEST_TIMEOUT_MS = 60000;
 export const REQUEST_TIMEOUT_MS_FOR_THINKING = REQUEST_TIMEOUT_MS * 5;
@@ -178,7 +174,8 @@ export const Anthropic = {
 };
 
 export const OpenaiPath = {
-  ChatPath: "v1/chat/completions",
+  // ChatPath: "v1/chat/completions",
+  ChatPath: ALIBABA_PATH,
   SpeechPath: "v1/audio/speech",
   ImagePath: "v1/images/generations",
   UsagePath: "dashboard/billing/usage",
@@ -236,7 +233,7 @@ export const Alibaba = {
 
     // https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions
 
-    const URL = "compatible-mode/v1/chat/completions";
+    const URL = ALIBABA_PATH;
 
     // if (modelName.includes("vl") || modelName.includes("omni")) {
     //   return "v1/services/aigc/multimodal-generation/generation";

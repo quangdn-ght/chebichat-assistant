@@ -510,7 +510,7 @@ export function ChatActions(props: {
   const pluginStore = usePluginStore();
   const session = chatStore.currentSession();
 
-  // switch themes
+  // Chuyển đổi giữa các chế độ giao diện sáng/tối
   const theme = config.theme;
 
   function nextTheme() {
@@ -521,11 +521,11 @@ export function ChatActions(props: {
     config.update((config) => (config.theme = nextTheme));
   }
 
-  // stop all responses
+  // Dừng tất cả các phản hồi đang chạy
   const couldStop = ChatControllerPool.hasPending();
   const stopAll = () => ChatControllerPool.stopAll();
 
-  // switch model
+  // Chuyển đổi giữa các mô hình AI
   const currentModel = session.mask.modelConfig.model;
   const currentProviderName =
     session.mask.modelConfig?.providerName || ServiceProvider.OpenAI;
@@ -577,11 +577,11 @@ export function ChatActions(props: {
       props.setUploading(false);
     }
 
-    // if current model is not available
-    // switch to first available model
+    // nếu mô hình hiện tại không khả dụng
+    // chuyển sang mô hình khả dụng đầu tiên
     const isUnavailableModel = !models.some((m) => m.name === currentModel);
     if (isUnavailableModel && models.length > 0) {
-      // show next model to default model if exist
+      // hiển thị mô hình tiếp theo là mô hình mặc định nếu có
       let nextModel = models.find((model) => model.isDefault) || models[0];
       chatStore.updateTargetSession(session, (session) => {
         session.mask.modelConfig.model = nextModel.name;
@@ -1795,9 +1795,13 @@ function _Chat() {
               }}
             >
               {messages
-                // TODO
                 // .filter((m) => !m.isMcpResponse)
                 .map((message, i) => {
+                  // Bypass rendering if message.role is "system"
+                  if (message.role === "system") {
+                    return null;
+                  }
+
                   const isUser = message.role === "user";
                   const isContext = i < context.length;
                   const showActions =
@@ -1808,6 +1812,8 @@ function _Chat() {
 
                   const shouldShowClearContextDivider =
                     i === clearContextIndex - 1;
+
+                  console.log(message.role);
 
                   return (
                     <Fragment key={message.id}>

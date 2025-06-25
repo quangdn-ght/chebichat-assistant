@@ -42,8 +42,8 @@ export const DEFAULT_CONFIG = {
   lastUpdate: Date.now(), // timestamp, to merge state
 
   submitKey: SubmitKey.Enter,
-  avatar: "1f603",
-  fontSize: 14,
+  avatar: "chebi-user",
+  fontSize: 16,
   fontFamily: "",
   theme: Theme.Auto as Theme,
   tightBorder: !!config?.isApp,
