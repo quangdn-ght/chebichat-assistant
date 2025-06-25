@@ -61,6 +61,7 @@ export enum Path {
 
 export enum ApiPath {
   Cors = "",
+  Supabase = "/api/supabase",
   Azure = "/api/azure",
   OpenAI = "/api/alibaba", // Use Alibaba path for OpenAI API
   Anthropic = "/api/anthropic",

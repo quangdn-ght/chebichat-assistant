@@ -1813,7 +1813,7 @@ function _Chat() {
                   const shouldShowClearContextDivider =
                     i === clearContextIndex - 1;
 
-                  console.log(message.role);
+                  // console.log(message.role);
 
                   return (
                     <Fragment key={message.id}>
@@ -1868,9 +1868,9 @@ function _Chat() {
                                   }}
                                 ></IconButton>
                               </div>
-                              {isUser ? (
-                                <Avatar avatar={config.avatar} />
-                              ) : (
+
+                              {/* Neu la user thi khong hien thi avatar */}
+                              {isUser ? null : (
                                 <>
                                   {["system"].includes(message.role) ? (
                                     <Avatar avatar="2699-fe0f" />

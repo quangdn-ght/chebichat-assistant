@@ -15,6 +15,7 @@ import { handle as siliconflowHandler } from "../../siliconflow";
 import { handle as xaiHandler } from "../../xai";
 import { handle as chatglmHandler } from "../../glm";
 import { handle as proxyHandler } from "../../proxy";
+import { handle as supabaseHandler } from "../../supabase";
 
 async function handle(
   req: NextRequest,
@@ -27,6 +28,9 @@ async function handle(
 
   console.log(`[${params.provider} Route] params `, params);
   switch (apiPath) {
+    case ApiPath.Supabase:
+      console.log("[Supabase Route] params ", params);
+      return supabaseHandler(req, { params });
     case ApiPath.Azure:
       return azureHandler(req, { params });
     case ApiPath.Google:
