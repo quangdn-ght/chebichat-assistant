@@ -97,7 +97,7 @@ export interface ChatSession {
 
 export const DEFAULT_TOPIC = Locale.Store.DefaultTopic;
 export const BOT_HELLO: ChatMessage = createMessage({
-  role: "assistant",
+  role: "system",
   content: Locale.Store.BotHello,
 });
 

@@ -2,7 +2,7 @@
 #   git config --global user.name "quangdn-ght"
 
 git add .
-git commit -m "chuyen ve api dashscope compatible - toi uu vision qwen-vl"
+git commit -m "thay doi ui chebichat"
 git push
 
 # mdZddHXcuzsB0Akk

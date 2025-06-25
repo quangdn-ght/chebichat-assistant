@@ -110,7 +110,11 @@ export const ACCESS_CODE_PREFIX = "nk-";
 export const LAST_INPUT_KEY = "last-input";
 export const UNFINISHED_INPUT = (id: string) => "unfinished-input-" + id;
 
-export const STORAGE_KEY = "chatgpt-next-web";
+// The key used to store the last chat ID in local storage
+export const UPSTASH_ENDPOINT = "https://fine-baboon-52580.upstash.io";
+export const UPSTASH_APIKEY =
+  "Ac1kAAIjcDE2YjM4YmY3OGI4YzA0MTU2YjZhNmQyNzc5Yzc3NzEwYnAxMA";
+export const STORAGE_KEY = "chebichat-backup";
 
 export const REQUEST_TIMEOUT_MS = 60000;
 export const REQUEST_TIMEOUT_MS_FOR_THINKING = REQUEST_TIMEOUT_MS * 5;
@@ -599,15 +603,15 @@ const bytedanceModels = [
 
 const alibabaModes = [
   "qwen-turbo",
-  "qwen-plus",
+  // "qwen-plus",
   "qwen-max",
-  "qwen-max-0428",
-  "qwen-max-0403",
-  "qwen-max-0107",
-  "qwen-max-longcontext",
-  "qwen-omni-turbo",
+  // "qwen-max-0428",
+  // "qwen-max-0403",
+  // "qwen-max-0107",
+  // "qwen-max-longcontext",
+  // "qwen-omni-turbo",
   "qwen-vl-plus",
-  "qwen-vl-max",
+  // "qwen-vl-max",
 ];
 
 const tencentModels = [

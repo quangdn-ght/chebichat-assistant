@@ -204,9 +204,9 @@ export class QwenApi implements LLMApi {
             // Accumulate and render result as it streams
             onUpdate: (() => {
               let accumulated = "";
-              return (chunk: string) => {
+              return (chunk: string, fetchText?: string) => {
                 accumulated += chunk;
-                options.onUpdate?.(accumulated, chunk);
+                options.onUpdate?.(accumulated, fetchText ?? "");
               };
             })(),
             onFinish: (final: string, res: any) => {

@@ -1330,18 +1330,32 @@ function _Chat() {
     }
   }
 
+  // Sử dụng useMemo để tạo mảng context chứa các tin nhắn ngữ cảnh (context messages) của phiên chat hiện tại.
+  // Nếu mask được thiết lập ẩn context (hideContext), trả về mảng rỗng.
+  // Ngược lại, sao chép các tin nhắn context từ session.mask.context.
   const context: RenderMessage[] = useMemo(() => {
     return session.mask.hideContext ? [] : session.mask.context.slice();
   }, [session.mask.context, session.mask.hideContext]);
 
+  // Nếu không có tin nhắn context nào (context.length === 0)
+  // và tin nhắn đầu tiên của session không phải là lời chào mặc định của bot (BOT_HELLO),
+  // thì thêm tin nhắn chào mặc định của bot vào context.
+  // Nếu người dùng chưa đăng nhập (không có quyền truy cập), thay nội dung lời chào bằng thông báo lỗi chưa đăng nhập.
   if (
     context.length === 0 &&
     session.messages.at(0)?.content !== BOT_HELLO.content
   ) {
+    // sao chép lời chào mặc định của bot
+
     const copiedHello = Object.assign({}, BOT_HELLO);
+
+    // nếu người dùng chưa đăng nhập, thay nội dung lời chào bằng thông báo lỗi chưa đăng nhập
     if (!accessStore.isAuthorized()) {
       copiedHello.content = Locale.Error.Unauthorized;
     }
+    // thêm lời chào vào context
+    // để hiển thị lời chào này trong giao diện chat
+    // như là một phần của ngữ cảnh cuộc trò chuyện
     context.push(copiedHello);
   }
 
