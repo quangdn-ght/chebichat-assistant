@@ -5,3 +5,4 @@ export const UPSTASH_ENDPOINT = "https://fine-baboon-52580.upstash.io";
 export const UPSTASH_APIKEY =
   "Ac1kAAIjcDE2YjM4YmY3OGI4YzA0MTU2YjZhNmQyNzc5Yzc3NzEwYnAxMA";
 export const STORAGE_KEY = "chebichat-backup";
+export const AUTHEN_PAGE = "https://chinese.giahungtech.com.vn";

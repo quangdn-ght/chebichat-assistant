@@ -30,14 +30,17 @@ export async function requestOpenai(req: NextRequest) {
     authHeaderName = "api-key";
   } else {
     // Nếu là OpenAI thường, giữ nguyên header Authorization
+
     authValue = req.headers.get("Authorization") ?? "";
     authHeaderName = "Authorization";
+
+    console.log("[Auth] ", authValue);
   }
 
   // Xử lý lại đường dẫn endpoint cho phù hợp với OpenAI/Azure
   let path = `${req.nextUrl.pathname}`.replaceAll("/api/openai/", "");
 
-  console.log("[Proxy] mac dinh ", path);
+  // console.log("[Proxy] mac dinh ", path);
 
   // Lấy baseUrl từ config, ưu tiên Azure nếu là request Azure
   let baseUrl =

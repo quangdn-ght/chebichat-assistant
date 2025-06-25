@@ -35,10 +35,10 @@ export function compressImage(file: Blob, maxSize: number): Promise<string> {
           if (dataUrl.length < maxSize) break;
 
           if (quality > 0.5) {
-            // Prioritize quality reduction
+            // Ưu tiên giảm chất lượng
             quality -= 0.1;
           } else {
-            // Then reduce the size
+            // Sau đó giảm kích thước
             width *= 0.9;
             height *= 0.9;
           }

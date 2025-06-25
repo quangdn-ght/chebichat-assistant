@@ -37,7 +37,7 @@ export default function RootLayout({
   const serverConfig = getServerSideConfig();
 
   // Log server configuration for debugging
-  console.log("Server Configuration:");
+  // console.log("Server Configuration:");
   // console.log(serverConfig);
 
   return (

@@ -29,13 +29,15 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
-import { Selector, showConfirm } from "./ui-lib";
+import { Selector, showConfirm, showToast } from "./ui-lib";
 import clsx from "clsx";
 import { isMcpEnabled } from "../mcp/actions";
+import { useSyncStore } from "../store/sync";
 
 const DISCOVERY = [
   // { name: Locale.Plugin.Name, path: Path.Plugins },
   // { name: "Stable Diffusion", path: Path.Sd },
+  { name: Locale.UI.Sync, path: "/sync" },
   { name: Locale.SearchChat.Page.Title, path: Path.SearchChat },
 ];
 
@@ -233,6 +235,8 @@ export function SideBar(props: { className?: string }) {
   const chatStore = useChatStore();
   const [mcpEnabled, setMcpEnabled] = useState(false);
 
+  const syncStore = useSyncStore();
+
   useEffect(() => {
     // 检查 MCP 是否启用
     const checkMcpStatus = async () => {
@@ -306,9 +310,20 @@ export function SideBar(props: { className?: string }) {
               }),
             ]}
             onClose={() => setshowDiscoverySelector(false)}
-            onSelection={(s) => {
-              // Điều hướng đến trang được chọn
-              navigate(s[0], { state: { fromHome: true } });
+            onSelection={async (s) => {
+              console.log(s[0]);
+              if (s[0] == "/sync") {
+                try {
+                  await syncStore.sync();
+                  console.log("Dong bo thanh cong ");
+                  showToast(Locale.Settings.Sync.Success);
+                } catch (e) {
+                  showToast(Locale.Settings.Sync.Fail);
+                  console.error("[Sync]", e);
+                }
+              } else {
+                navigate(s[0], { state: { fromHome: true } });
+              }
             }}
           />
         )}

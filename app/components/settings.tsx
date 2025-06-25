@@ -529,6 +529,8 @@ function SyncItems() {
                 setShowSyncConfigModal(true);
               }}
             />
+
+            {/* thuc hien dong bo voi cloud */}
             {couldSync && (
               <IconButton
                 icon={<ResetIcon />}
