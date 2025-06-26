@@ -2,7 +2,7 @@ import { BuiltinMask } from "./typing";
 import { IMAGES } from "./base64Images";
 import { CHEBI_MESSAGE, CHEBI_VISION } from "../chebichatConstant";
 // import {}
-export const CN_MASKS: BuiltinMask[] = [
+export const VI_MASKS: BuiltinMask[] = [
   {
     avatar: "1f5bc-fe0f",
     name: "Học tiếng trung hỏi đáp AI",

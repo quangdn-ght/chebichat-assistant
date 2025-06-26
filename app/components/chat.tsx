@@ -36,7 +36,6 @@ import CancelIcon from "../icons/cancel.svg";
 import ImageIcon from "../icons/image.svg";
 
 import LightIcon from "../icons/light.svg";
-import DarkIcon from "../icons/dark.svg";
 import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
@@ -75,6 +74,7 @@ import {
   useMobileScreen,
   selectOrCopy,
   showPlugins,
+  isIOS,
 } from "../utils";
 
 import { uploadImage as uploadImageRemote } from "@/app/utils/chat";
@@ -514,7 +514,8 @@ export function ChatActions(props: {
   const theme = config.theme;
 
   function nextTheme() {
-    const themes = [Theme.Auto, Theme.Light, Theme.Dark];
+    //, Theme.Dark
+    const themes = [Theme.Auto, Theme.Light];
     const themeIndex = themes.indexOf(theme);
     const nextIndex = (themeIndex + 1) % themes.length;
     const nextTheme = themes[nextIndex];
@@ -637,9 +638,10 @@ export function ChatActions(props: {
                 <AutoIcon />
               ) : theme === Theme.Light ? (
                 <LightIcon />
-              ) : theme === Theme.Dark ? (
-                <DarkIcon />
-              ) : null}
+              ) : // theme === Theme.Dark ? (
+              //   <DarkIcon />
+              // )
+              null}
             </>
           }
         />
@@ -1167,7 +1169,8 @@ function _Chat() {
 
       // auto sync mask config from global config
       if (session.mask.syncGlobalConfig) {
-        console.log("[Mask] syncing from global, name = ", session.mask.name);
+        // console.log("[Mask] syncing from global, name = ", session.mask.name);
+
         session.mask.modelConfig = { ...config.modelConfig };
       }
     });
@@ -1452,7 +1455,10 @@ function _Chat() {
 
   const clientConfig = useMemo(() => getClientConfig(), []);
 
-  const autoFocus = !isMobileScreen; // wont auto focus on mobile screen
+  const autoFocus = isIOS() ? false : !isMobileScreen; // wont auto focus on mobile screen
+
+  console.log("tu dong focus:", autoFocus);
+
   const showMaxIcon = !isMobileScreen && !clientConfig?.isApp;
 
   useCommand({

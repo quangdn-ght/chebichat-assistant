@@ -32,7 +32,7 @@ export enum SubmitKey {
 
 export enum Theme {
   Auto = "auto",
-  Dark = "dark",
+  // Dark = "dark",
   Light = "light",
 }
 
@@ -45,19 +45,19 @@ export const DEFAULT_CONFIG = {
   avatar: "chebi-user",
   fontSize: 16,
   fontFamily: "",
-  theme: Theme.Auto as Theme,
+  theme: Theme.Light as Theme,
   tightBorder: !!config?.isApp,
   sendPreviewBubble: true,
   enableAutoGenerateTitle: true,
   sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
 
-  enableArtifacts: true, // show artifacts config
+  enableArtifacts: false, // show artifacts config
 
-  enableCodeFold: true, // code fold config
+  enableCodeFold: false, // code fold config
 
   disablePromptHint: false,
 
-  dontShowMaskSplashScreen: false, // dont show splash screen when create chat
+  dontShowMaskSplashScreen: true, // dont show splash screen when create chat
   hideBuiltinMasks: false, // dont add builtin masks
 
   customModels: "",

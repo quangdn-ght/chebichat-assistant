@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { useSyncStore } from "./store/sync";
 import { showToast } from "./components/ui-lib";
-import { AUTHEN_PAGE } from "./constant";
 export default function SyncOnFirstLoad() {
   const syncStore = useSyncStore();
 
@@ -21,9 +20,10 @@ export default function SyncOnFirstLoad() {
 
           showToast("Please login first");
 
-          setTimeout(() => {
-            window.location.href = AUTHEN_PAGE;
-          }, 500);
+          //   setTimeout(() => {
+          //     window.location.href = AUTHEN_PAGE;
+          //   }, 500);
+
           return;
         }
 

@@ -472,7 +472,7 @@ const vi: PartialLocaleType = {
     },
   },
   Discovery: {
-    Name: "Tìm kiêm",
+    Name: "Mở rộng",
   },
   Copy: {
     Success: "Đã sao chép vào clipboard",

@@ -96,7 +96,12 @@ export const useMaskStore = createPersistStore(
         (a, b) => b.createdAt - a.createdAt,
       );
       const config = useAppConfig.getState(); // Lấy config hiện tại
+
+      // console.log(config)
+
       if (config.hideBuiltinMasks) return userMasks; // Nếu ẩn mask mặc định thì chỉ trả về mask người dùng
+
+      console.log("[Build] builtin masks: ", BUILTIN_MASKS);
 
       // Tạo danh sách mask mặc định (BUILTIN_MASKS) với cấu hình model hiện tại
       const buildinMasks = BUILTIN_MASKS.map(
@@ -109,6 +114,7 @@ export const useMaskStore = createPersistStore(
             },
           }) as Mask,
       );
+
       // Trả về danh sách mask người dùng + mask mặc định
       return userMasks.concat(buildinMasks);
     },
