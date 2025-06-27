@@ -6,8 +6,7 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY!;
 
 export async function checkAuth(req: NextRequest) {
   // Use NextRequest.cookies API
-  const authToken = req.cookies.get("sb-zzgkylsbdgwoohcbompi-auth-token")
-    ?.value;
+  const authToken = req.cookies.get("sb-access-token")?.value;
 
   // console.log("[Supabase] authToken", authToken);
 

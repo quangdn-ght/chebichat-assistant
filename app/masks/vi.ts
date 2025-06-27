@@ -1,5 +1,4 @@
 import { BuiltinMask } from "./typing";
-import { IMAGES } from "./base64Images";
 import { CHEBI_MESSAGE, CHEBI_VISION } from "../chebichatConstant";
 // import {}
 export const VI_MASKS: BuiltinMask[] = [
@@ -66,14 +65,14 @@ export const VI_MASKS: BuiltinMask[] = [
         content: [
           {
             type: "text",
-            text: "giải thích ý nghĩa bằng tiếng trung có pinyin",
+            text: "giải thích ý nghĩa qua hình ảnh bằng tiếng trung có pinyin",
           },
-          {
-            type: "image_url",
-            image_url: {
-              url: IMAGES.exampleImage,
-            },
-          },
+          // {
+          //   type: "image_url",
+          //   image_url: {
+          //     url: IMAGES.exampleImage,
+          //   },
+          // },
         ],
         date: "",
       },

@@ -2,7 +2,7 @@
 #   git config --global user.name "quangdn-ght"
 
 git add .
-git commit -m "xu ly built mask tieng viet va update role assistant"
+git commit -m "loi he thong"
 git push
 
 # mdZddHXcuzsB0Akk

@@ -212,7 +212,7 @@ export class ClientApi {
     // Please do not modify this message
 
     console.log("[Share]", messages, msgs);
-
+    //
     // Lấy cấu hình client
     const clientConfig = getClientConfig();
 
@@ -235,7 +235,7 @@ export class ClientApi {
 
     // Xử lý phản hồi và trả về link chia sẻ
     const resJson = await res.json();
-    console.log("[Share]", resJson);
+    // console.log("[Share]", resJson);
     if (resJson.id) {
       return `https://shareg.pt/${resJson.id}`;
     }
@@ -326,6 +326,8 @@ export function getHeaders(ignoreHeaders: boolean = false) {
         ? accessStore.iflytekApiKey + ":" + accessStore.iflytekApiSecret
         : ""
       : accessStore.openaiApiKey;
+
+    console.log("apiKey:", apiKey);
     return {
       isGoogle,
       isAzure,

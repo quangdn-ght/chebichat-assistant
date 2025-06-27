@@ -78,6 +78,8 @@ async function request(req: NextRequest) {
     signal: controller.signal,
   };
 
+  console.log("[Proxy] Alibaba options: ", fetchOptions);
+
   // #1815 try to refuse some request to some models
   if (serverConfig.customModels && req.body) {
     try {
