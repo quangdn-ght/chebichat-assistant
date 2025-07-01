@@ -97,7 +97,7 @@ export const useMaskStore = createPersistStore(
       );
       const config = useAppConfig.getState(); // Lấy config hiện tại
 
-      // console.log(config)
+      // console.log(config)BUILTIN_MASKS
 
       if (config.hideBuiltinMasks) return userMasks; // Nếu ẩn mask mặc định thì chỉ trả về mask người dùng
 

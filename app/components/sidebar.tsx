@@ -310,6 +310,7 @@ export function SideBar(props: { className?: string }) {
               }),
             ]}
             onClose={() => setshowDiscoverySelector(false)}
+            // dong bo du lieu voi cloud
             onSelection={async (s) => {
               console.log(s[0]);
               if (s[0] == "/sync") {

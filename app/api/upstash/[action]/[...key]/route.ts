@@ -55,13 +55,13 @@ async function handle(
     duplex: "half",
   };
 
-  console.log("[Upstash Proxy]", targetUrl, fetchOptions);
+  // console.log("[Upstash Proxy]", targetUrl, fetchOptions);
   const fetchResult = await fetch(targetUrl, fetchOptions);
 
-  console.log("[Any Proxy]", targetUrl, {
-    status: fetchResult.status,
-    statusText: fetchResult.statusText,
-  });
+  // console.log("[Any Proxy]", targetUrl, {
+  //   status: fetchResult.status,
+  //   statusText: fetchResult.statusText,
+  // });
 
   return fetchResult;
 }

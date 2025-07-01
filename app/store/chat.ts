@@ -471,6 +471,9 @@ export const useChatStore = createPersistStore(
         });
 
         const api: ClientApi = getClientApi(modelConfig.providerName);
+
+        console.log(api);
+
         // make request
         api.llm.chat({
           messages: sendMessages,

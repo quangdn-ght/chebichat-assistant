@@ -515,6 +515,7 @@ export function ChatActions(props: {
 
   function nextTheme() {
     //, Theme.Dark
+
     const themes = [Theme.Auto, Theme.Light];
     const themeIndex = themes.indexOf(theme);
     const nextIndex = (themeIndex + 1) % themes.length;

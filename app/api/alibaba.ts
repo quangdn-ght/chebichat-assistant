@@ -27,7 +27,7 @@ export async function handle(
     const response = await request(req);
     return response;
   } catch (e) {
-    console.error("[Alibaba] ", e);
+    // console.error("[Alibaba] ", e);
     return NextResponse.json(prettyObject(e));
   }
 }
@@ -62,13 +62,13 @@ async function request(req: NextRequest) {
 
   const fetchUrl = `${baseUrl}${path}`;
 
-  console.log("[Alibaba] fetchUrl", fetchUrl);
+  // console.log("[Alibaba] fetchUrl", fetchUrl);
 
   const fetchOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
       Authorization: req.headers.get("Authorization") ?? "",
-      "X-DashScope-SSE": req.headers.get("X-DashScope-SSE") ?? "disable",
+      "X-DashScope-SSE": req.headers.get("X-DashScope-SSE") ?? "enable",
     },
     method: req.method,
     body: req.body,
@@ -78,7 +78,7 @@ async function request(req: NextRequest) {
     signal: controller.signal,
   };
 
-  console.log("[Proxy] Alibaba options: ", fetchOptions);
+  // console.log("[Proxy] Alibaba options: ", fetchOptions);
 
   // #1815 try to refuse some request to some models
   if (serverConfig.customModels && req.body) {
@@ -100,7 +100,7 @@ async function request(req: NextRequest) {
         }
 
         const current_model = jsonBody?.model;
-        console.log("[Alibaba] custom models", current_model);
+        // console.log("[Alibaba] custom models", current_model);
 
         //kiem tra xem model co phai la qwen-vl hay khong (vision model)
         if (current_model && current_model.startsWith("qwen-vl")) {
@@ -156,7 +156,7 @@ async function request(req: NextRequest) {
       //   );
       // }
     } catch (e) {
-      console.error(`[Alibaba] filter`, e);
+      // console.error(`[Alibaba] filter`, e);
     }
   }
   try {

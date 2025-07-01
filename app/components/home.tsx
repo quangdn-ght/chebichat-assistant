@@ -90,11 +90,13 @@ export function useSwitchTheme() {
     document.body.classList.remove("light");
     document.body.classList.remove("dark");
 
-    if (config.theme === "dark") {
-      document.body.classList.add("dark");
-    } else if (config.theme === "light") {
-      document.body.classList.add("light");
-    }
+    // if (config.theme === "dark") {
+    //   document.body.classList.add("dark");
+    // } else if (config.theme === "light") {
+    //   document.body.classList.add("light");
+    // }
+
+    document.body.classList.add("light");
 
     const metaDescriptionDark = document.querySelector(
       'meta[name="theme-color"][media*="dark"]',
