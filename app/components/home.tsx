@@ -9,12 +9,13 @@ import BotIcon from "../icons/bot.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 
 import { getCSSVar, useMobileScreen } from "../utils";
+import { Theme } from "../store/config";
 
 import dynamic from "next/dynamic";
 import { Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
 
-import { getISOLang, getLang } from "../locales";
+import { getISOLang } from "../locales";
 
 import {
   HashRouter as Router,
@@ -89,9 +90,9 @@ export function useSwitchTheme() {
     document.body.classList.remove("light");
     document.body.classList.remove("dark");
 
-    if (config.theme === "dark") {
+    if (config.theme === Theme.Dark) {
       document.body.classList.add("dark");
-    } else if (config.theme === "light") {
+    } else if (config.theme === Theme.Light) {
       document.body.classList.add("light");
     }
 
@@ -212,7 +213,6 @@ function Screen() {
     <div
       className={clsx(styles.container, {
         [styles["tight-container"]]: shouldTightBorder,
-        [styles["rtl-screen"]]: getLang() === "ar",
       })}
     >
       {renderContent()}

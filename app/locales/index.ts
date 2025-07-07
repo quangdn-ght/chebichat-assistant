@@ -1,6 +1,7 @@
 import cn from "./cn";
 import en from "./en";
 import vi from "./vi";
+import tw from "./tw";
 import { merge } from "../utils/merge";
 import { safeLocalStorage } from "@/app/utils";
 
@@ -13,6 +14,7 @@ const ALL_LANGS = {
   cn,
   en,
   vi,
+  tw,
 };
 
 export type Lang = keyof typeof ALL_LANGS;
@@ -23,6 +25,7 @@ export const ALL_LANG_OPTIONS: Record<Lang, string> = {
   vi: "Tiếng Việt",
   en: "English",
   cn: "简体中文",
+  tw: "繁體中文",
 };
 
 const LANG_KEY = "lang";
@@ -103,8 +106,8 @@ const DEFAULT_STT_LANG = "vi-VN";
 export const STT_LANG_MAP: Record<Lang, string> = {
   cn: "zh-CN",
   en: "en-US",
-
   vi: "vi-VN",
+  tw: "zh-TW",
 };
 
 export function getSTTLang(): string {

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../hooks/useAuth";
 
-export default function LoginPage() {
+function LoginForm() {
   const [token, setToken] = useState("");
   const [refreshToken, setRefreshToken] = useState("");
   const [loading, setLoading] = useState(false);
@@ -146,5 +146,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

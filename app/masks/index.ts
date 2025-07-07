@@ -28,11 +28,11 @@ if (typeof window != "undefined") {
     .then((res) => res.json())
     .catch((error) => {
       console.error("[Fetch] failed to fetch masks", error);
-      return { vi: [], tw: [], en: [] };
+      return { vi: [], en: [] };
     })
     .then((masks) => {
-      const { vi = [], tw = [], en = [] } = masks;
-      return [...vi, ...tw, ...en].map((m) => {
+      const { vi = [], en = [] } = masks;
+      return [...vi, ...en].map((m) => {
         BUILTIN_MASKS.push(BUILTIN_MASK_STORE.add(m));
       });
     });

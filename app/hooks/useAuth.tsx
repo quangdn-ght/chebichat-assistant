@@ -190,9 +190,11 @@ export function useAuth() {
 }
 
 // Higher-order component for protecting routes
-export function withAuth<T extends object>(Component: React.ComponentType<T>) {
-  return function AuthenticatedComponent(props: T) {
-    const { authenticated, loading, user } = useAuth();
+export function withAuth<T extends Record<string, any>>(
+  Component: React.ComponentType<T>,
+) {
+  const AuthenticatedComponent = (props: T) => {
+    const { authenticated, loading } = useAuth();
 
     useEffect(() => {
       if (!loading && !authenticated) {
@@ -212,6 +214,13 @@ export function withAuth<T extends object>(Component: React.ComponentType<T>) {
       return <div>Redirecting to login...</div>;
     }
 
-    return <Component {...props} user={user} />;
+    return <Component {...props} />;
   };
+
+  // Set the display name for better debugging
+  AuthenticatedComponent.displayName = `withAuth(${
+    Component.displayName || Component.name || "Component"
+  })`;
+
+  return AuthenticatedComponent;
 }

@@ -1,14 +1,32 @@
 "use client";
 
-import React from "react";
-import { useAuth, withAuth } from "../hooks/useAuth";
+import React, { useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
 
-function ProfilePage() {
-  const { user, logout } = useAuth();
+export default function ProfilePage() {
+  const { user, logout, authenticated, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !authenticated) {
+      // Redirect to login if not authenticated
+      const currentPath = window.location.pathname;
+      window.location.href = `/login?redirect_to=${encodeURIComponent(
+        currentPath,
+      )}`;
+    }
+  }, [authenticated, loading]);
 
   const handleLogout = () => {
     logout();
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!authenticated) {
+    return <div>Redirecting to login...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -70,5 +88,3 @@ function ProfilePage() {
     </div>
   );
 }
-
-export default withAuth(ProfilePage);
