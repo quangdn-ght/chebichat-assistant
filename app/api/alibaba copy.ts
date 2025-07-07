@@ -10,7 +10,7 @@ export async function handle(
   req: NextRequest,
   { params }: { params: { path: string[] } },
 ) {
-  // console.log("[Alibaba Route] params ", params);
+  console.log("[Alibaba Route] params ", params);
 
   if (req.method === "OPTIONS") {
     return NextResponse.json({ body: "OK" }, { status: 200 });
@@ -27,7 +27,7 @@ export async function handle(
     const response = await request(req);
     return response;
   } catch (e) {
-    // console.error("[Alibaba] ", e);
+    console.error("[Alibaba] ", e);
     return NextResponse.json(prettyObject(e));
   }
 }
@@ -36,9 +36,7 @@ async function request(req: NextRequest) {
   const controller = new AbortController();
 
   // alibaba use base url or just remove the path
-  let path = `${req.nextUrl.pathname}`
-    .replaceAll(ApiPath.Alibaba, "")
-    .replace("/api", "");
+  let path = `${req.nextUrl.pathname}`.replaceAll(ApiPath.Alibaba, "");
 
   let baseUrl = serverConfig.alibabaUrl || ALIBABA_BASE_URL;
 
@@ -61,14 +59,11 @@ async function request(req: NextRequest) {
   );
 
   const fetchUrl = `${baseUrl}${path}`;
-
-  // console.log("[Alibaba] fetchUrl", fetchUrl);
-
   const fetchOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
       Authorization: req.headers.get("Authorization") ?? "",
-      "X-DashScope-SSE": req.headers.get("X-DashScope-SSE") ?? "enable",
+      "X-DashScope-SSE": req.headers.get("X-DashScope-SSE") ?? "disable",
     },
     method: req.method,
     body: req.body,
@@ -77,8 +72,6 @@ async function request(req: NextRequest) {
     duplex: "half",
     signal: controller.signal,
   };
-
-  // console.log("[Proxy] Alibaba options: ", fetchOptions);
 
   // #1815 try to refuse some request to some models
   if (serverConfig.customModels && req.body) {
@@ -89,53 +82,23 @@ async function request(req: NextRequest) {
       try {
         jsonBody = JSON.parse(clonedBody);
 
-        // Move input.messages to messages at the root level if present
-        if (jsonBody.input && Array.isArray(jsonBody.input.messages)) {
-          jsonBody.messages = jsonBody.input.messages;
-
-          // Remove input.messages to avoid duplication
-          delete jsonBody.input;
-
-          jsonBody.stream = true;
+        // Transform the body structure if it has nested input
+        if (jsonBody.input && jsonBody.input.messages) {
+          const transformedBody = {
+            model: jsonBody.model,
+            messages: jsonBody.input.messages,
+            stream: jsonBody.stream || true,
+            parameters: jsonBody.parameters || {},
+          };
+          jsonBody = transformedBody;
         }
-
-        const current_model = jsonBody?.model;
-        // console.log("[Alibaba] custom models", current_model);
-
-        //kiem tra xem model co phai la qwen-vl hay khong (vision model)
-        if (current_model && current_model.startsWith("qwen-vl")) {
-          console.log("[Alibaba] current model is qwen-vl");
-          console.log("xu ly hinh anh trong message");
-
-          // Reformat image objects in messages
-          if (Array.isArray(jsonBody.messages)) {
-            jsonBody.messages = jsonBody.messages.map((msg: any) => {
-              if (Array.isArray(msg.content)) {
-                msg.content = msg.content.map((item: any) => {
-                  if (item && typeof item === "object" && "image" in item) {
-                    return {
-                      type: "image_url",
-                      image_url: {
-                        url: item.image,
-                      },
-                    };
-                  }
-                  return item;
-                });
-              }
-              return msg;
-            });
-          }
-        }
-
-        // console.log("[Alibaba] request body json", jsonBody);
 
         fetchOptions.body = JSON.stringify(jsonBody);
       } catch (e) {
         fetchOptions.body = clonedBody; // fallback if not JSON
       }
 
-      // console.log("[Alibaba] request body", fetchOptions.body);
+      console.log("[Alibaba] request body", fetchOptions.body);
 
       // not undefined and is false
       // if (
@@ -156,7 +119,7 @@ async function request(req: NextRequest) {
       //   );
       // }
     } catch (e) {
-      // console.error(`[Alibaba] filter`, e);
+      console.error(`[Alibaba] filter`, e);
     }
   }
   try {

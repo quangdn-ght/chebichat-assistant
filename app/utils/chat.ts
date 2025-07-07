@@ -555,7 +555,7 @@ export function streamWithThink(
       async onopen(res) {
         clearTimeout(requestTimeoutId);
         const contentType = res.headers.get("content-type");
-        console.log("[Request] response content type: ", contentType);
+        // console.log("[Request] response content type: ", contentType);
         responseRes = res;
 
         if (contentType?.startsWith("text/plain")) {

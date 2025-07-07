@@ -28,6 +28,7 @@ import {
   StoreKey,
   SUMMARIZE_MODEL,
 } from "../constant";
+import { CHEBI_MESSAGE } from "../chebichatConstant";
 import Locale, { getLang } from "../locales";
 import { prettyObject } from "../utils/format";
 import { createPersistStore } from "../utils/store";
@@ -97,8 +98,8 @@ export interface ChatSession {
 
 export const DEFAULT_TOPIC = Locale.Store.DefaultTopic;
 export const BOT_HELLO: ChatMessage = createMessage({
-  role: "assistant",
-  content: Locale.Store.BotHello,
+  role: "system",
+  content: CHEBI_MESSAGE,
 });
 
 function createEmptySession(): ChatSession {
@@ -106,7 +107,13 @@ function createEmptySession(): ChatSession {
     id: nanoid(),
     topic: DEFAULT_TOPIC,
     memoryPrompt: "",
-    messages: [],
+    messages: [
+      // BOT_HELLO,
+      createMessage({
+        role: "system",
+        content: CHEBI_MESSAGE,
+      }),
+    ],
     stat: {
       tokenCount: 0,
       wordCount: 0,

@@ -1,3 +1,7 @@
+import { ALIBABA_BASE_URL, ALIBABA_PATH } from "./chebichatConstant";
+
+export * from "./chebichatConstant";
+
 export const OWNER = "ChatGPTNextWeb";
 export const REPO = "ChatGPT-Next-Web";
 export const REPO_URL = `https://github.com/${OWNER}/${REPO}`;
@@ -20,8 +24,6 @@ export const BAIDU_BASE_URL = "https://aip.baidubce.com";
 export const BAIDU_OATUH_URL = `${BAIDU_BASE_URL}/oauth/2.0/token`;
 
 export const BYTEDANCE_BASE_URL = "https://ark.cn-beijing.volces.com";
-
-export const ALIBABA_BASE_URL = "https://dashscope-intl.aliyuncs.com";
 
 export const TENCENT_BASE_URL = "https://hunyuan.tencentcloudapi.com";
 
@@ -55,12 +57,14 @@ export enum Path {
   Artifacts = "/artifacts",
   SearchChat = "/search-chat",
   McpMarket = "/mcp-market",
+  Sync = "/sync",
 }
 
 export enum ApiPath {
   Cors = "",
+  Supabase = "/api/supabase",
   Azure = "/api/azure",
-  OpenAI = "/api/openai",
+  OpenAI = "/api/alibaba", // Use Alibaba path for OpenAI API
   Anthropic = "/api/anthropic",
   Google = "/api/google",
   Baidu = "/api/baidu",
@@ -98,6 +102,7 @@ export enum StoreKey {
   Sync = "sync",
   SdList = "sd-list",
   Mcp = "mcp-store",
+  Auth = "auth-store",
 }
 
 export const DEFAULT_SIDEBAR_WIDTH = 300;
@@ -109,8 +114,6 @@ export const ACCESS_CODE_PREFIX = "nk-";
 
 export const LAST_INPUT_KEY = "last-input";
 export const UNFINISHED_INPUT = (id: string) => "unfinished-input-" + id;
-
-export const STORAGE_KEY = "chatgpt-next-web";
 
 export const REQUEST_TIMEOUT_MS = 60000;
 export const REQUEST_TIMEOUT_MS_FOR_THINKING = REQUEST_TIMEOUT_MS * 5;
@@ -174,7 +177,8 @@ export const Anthropic = {
 };
 
 export const OpenaiPath = {
-  ChatPath: "v1/chat/completions",
+  // ChatPath: "v1/chat/completions",
+  ChatPath: ALIBABA_PATH,
   SpeechPath: "v1/audio/speech",
   ImagePath: "v1/images/generations",
   UsagePath: "dashboard/billing/usage",
@@ -224,12 +228,19 @@ export const ByteDance = {
 
 export const Alibaba = {
   ExampleEndpoint: ALIBABA_BASE_URL,
-  ChatPath: (modelName: string) => {
-    const URL = `api/v1/apps/${ALIBABA_APP_ID}/completion`;
 
-    if (modelName.includes("vl") || modelName.includes("omni")) {
-      return "v1/services/aigc/multimodal-generation/generation";
-    }
+  ChatPath: (modelName: string) => {
+    // CHUYEN DUNG CHO ALIBABA APP ID
+    // const URL = `api/v1/apps/${ALIBABA_APP_ID}/completion`;
+    console.log("[Alibaba] modelName", modelName);
+
+    // https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions
+
+    const URL = ALIBABA_PATH;
+
+    // if (modelName.includes("vl") || modelName.includes("omni")) {
+    //   return "v1/services/aigc/multimodal-generation/generation";
+    // }
     // return `v1/services/aigc/text-generation/generation`;
     return URL;
   },
@@ -282,137 +293,137 @@ export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lan
 // Latex block: $$e=mc^2$$
 // `;
 export const DEFAULT_SYSTEM_TEMPLATE = `
-You are ChatGPT, a large language model trained by {{ServiceProvider}}.
-Knowledge cutoff: {{cutoff}}
-Current model: {{model}}
-Current time: {{time}}
-Latex inline: \\(x^2\\) 
-Latex block: $$e=mc^2$$
-`;
+  You are ChatGPT, a large language model trained by {{ServiceProvider}}.
+  Knowledge cutoff: {{cutoff}}
+  Current model: {{model}}
+  Current time: {{time}}
+  Latex inline: \\(x^2\\) 
+  Latex block: $$e=mc^2$$
+  `;
 
 export const MCP_TOOLS_TEMPLATE = `
-[clientId]
-{{ clientId }}
-[tools]
-{{ tools }}
-`;
+  [clientId]
+  {{ clientId }}
+  [tools]
+  {{ tools }}
+  `;
 
 export const MCP_SYSTEM_TEMPLATE = `
-You are an AI assistant with access to system tools. Your role is to help users by combining natural language understanding with tool operations when needed.
+  You are an AI assistant with access to system tools. Your role is to help users by combining natural language understanding with tool operations when needed.
 
-1. AVAILABLE TOOLS:
-{{ MCP_TOOLS }}
+  1. AVAILABLE TOOLS:
+  {{ MCP_TOOLS }}
 
-2. WHEN TO USE TOOLS:
-   - ALWAYS USE TOOLS when they can help answer user questions
-   - DO NOT just describe what you could do - TAKE ACTION immediately
-   - If you're not sure whether to use a tool, USE IT
-   - Common triggers for tool use:
-     * Questions about files or directories
-     * Requests to check, list, or manipulate system resources
-     * Any query that can be answered with available tools
+  2. WHEN TO USE TOOLS:
+    - ALWAYS USE TOOLS when they can help answer user questions
+    - DO NOT just describe what you could do - TAKE ACTION immediately
+    - If you're not sure whether to use a tool, USE IT
+    - Common triggers for tool use:
+      * Questions about files or directories
+      * Requests to check, list, or manipulate system resources
+      * Any query that can be answered with available tools
 
-3. HOW TO USE TOOLS:
-   A. Tool Call Format:
-      - Use markdown code blocks with format: \`\`\`json:mcp:{clientId}\`\`\`
-      - Always include:
-        * method: "tools/call"（Only this method is supported）
-        * params: 
-          - name: must match an available primitive name
-          - arguments: required parameters for the primitive
+  3. HOW TO USE TOOLS:
+    A. Tool Call Format:
+        - Use markdown code blocks with format: \`\`\`json:mcp:{clientId}\`\`\`
+        - Always include:
+          * method: "tools/call"（Only this method is supported）
+          * params: 
+            - name: must match an available primitive name
+            - arguments: required parameters for the primitive
 
-   B. Response Format:
-      - Tool responses will come as user messages
-      - Format: \`\`\`json:mcp-response:{clientId}\`\`\`
-      - Wait for response before making another tool call
+    B. Response Format:
+        - Tool responses will come as user messages
+        - Format: \`\`\`json:mcp-response:{clientId}\`\`\`
+        - Wait for response before making another tool call
 
-   C. Important Rules:
-      - Only use tools/call method
-      - Only ONE tool call per message
-      - ALWAYS TAKE ACTION instead of just describing what you could do
-      - Include the correct clientId in code block language tag
-      - Verify arguments match the primitive's requirements
+    C. Important Rules:
+        - Only use tools/call method
+        - Only ONE tool call per message
+        - ALWAYS TAKE ACTION instead of just describing what you could do
+        - Include the correct clientId in code block language tag
+        - Verify arguments match the primitive's requirements
 
-4. INTERACTION FLOW:
-   A. When user makes a request:
-      - IMMEDIATELY use appropriate tool if available
-      - DO NOT ask if user wants you to use the tool
-      - DO NOT just describe what you could do
-   B. After receiving tool response:
-      - Explain results clearly
-      - Take next appropriate action if needed
-   C. If tools fail:
-      - Explain the error
-      - Try alternative approach immediately
+  4. INTERACTION FLOW:
+    A. When user makes a request:
+        - IMMEDIATELY use appropriate tool if available
+        - DO NOT ask if user wants you to use the tool
+        - DO NOT just describe what you could do
+    B. After receiving tool response:
+        - Explain results clearly
+        - Take next appropriate action if needed
+    C. If tools fail:
+        - Explain the error
+        - Try alternative approach immediately
 
-5. EXAMPLE INTERACTION:
+  5. EXAMPLE INTERACTION:
 
-  good example:
+    good example:
 
-   \`\`\`json:mcp:filesystem
-   {
-     "method": "tools/call",
-     "params": {
-       "name": "list_allowed_directories",
-       "arguments": {}
-     }
-   }
-   \`\`\`"
-
-
-  \`\`\`json:mcp-response:filesystem
-  {
-  "method": "tools/call",
-  "params": {
-    "name": "write_file",
-    "arguments": {
-      "path": "/Users/river/dev/nextchat/test/joke.txt",
-      "content": "为什么数学书总是感到忧伤？因为它有太多的问题。"
-    }
-  }
-  }
-\`\`\`
-
-   follwing is the wrong! mcp json example:
-
-   \`\`\`json:mcp:filesystem
-   {
-      "method": "write_file",
+    \`\`\`json:mcp:filesystem
+    {
+      "method": "tools/call",
       "params": {
-        "path": "NextChat_Information.txt",
-        "content": "1"
+        "name": "list_allowed_directories",
+        "arguments": {}
+      }
     }
-   }
-   \`\`\`
+    \`\`\`"
 
-   This is wrong because the method is not tools/call.
-   
-   \`\`\`{
-  "method": "search_repositories",
-  "params": {
-    "query": "2oeee"
+
+    \`\`\`json:mcp-response:filesystem
+    {
+    "method": "tools/call",
+    "params": {
+      "name": "write_file",
+      "arguments": {
+        "path": "/Users/river/dev/nextchat/test/joke.txt",
+        "content": "为什么数学书总是感到忧伤？因为它有太多的问题。"
+      }
+    }
+    }
+  \`\`\`
+
+    follwing is the wrong! mcp json example:
+
+    \`\`\`json:mcp:filesystem
+    {
+        "method": "write_file",
+        "params": {
+          "path": "NextChat_Information.txt",
+          "content": "1"
+      }
+    }
+    \`\`\`
+
+    This is wrong because the method is not tools/call.
+    
+    \`\`\`{
+    "method": "search_repositories",
+    "params": {
+      "query": "2oeee"
+    }
   }
-}
-   \`\`\`
+    \`\`\`
 
-   This is wrong because the method is not tools/call.!!!!!!!!!!!
+    This is wrong because the method is not tools/call.!!!!!!!!!!!
 
-   the right format is:
-   \`\`\`json:mcp:filesystem
-   {
-     "method": "tools/call",
-     "params": {
-       "name": "search_repositories",
-       "arguments": {
-         "query": "2oeee"
-       }
-     }
-   }
-   \`\`\`
-   
-   please follow the format strictly ONLY use tools/call method!!!!!!!!!!!
-   
-`;
+    the right format is:
+    \`\`\`json:mcp:filesystem
+    {
+      "method": "tools/call",
+      "params": {
+        "name": "search_repositories",
+        "arguments": {
+          "query": "2oeee"
+        }
+      }
+    }
+    \`\`\`
+    
+    please follow the format strictly ONLY use tools/call method!!!!!!!!!!!
+    
+  `;
 
 export const SUMMARIZE_MODEL = "gpt-4o-mini";
 export const GEMINI_SUMMARIZE_MODEL = "gemini-pro";
@@ -592,15 +603,15 @@ const bytedanceModels = [
 
 const alibabaModes = [
   "qwen-turbo",
-  "qwen-plus",
+  // "qwen-plus",
   "qwen-max",
-  "qwen-max-0428",
-  "qwen-max-0403",
-  "qwen-max-0107",
-  "qwen-max-longcontext",
-  "qwen-omni-turbo",
+  // "qwen-max-0428",
+  // "qwen-max-0403",
+  // "qwen-max-0107",
+  // "qwen-max-longcontext",
+  // "qwen-omni-turbo",
   "qwen-vl-plus",
-  "qwen-vl-max",
+  // "qwen-vl-max",
 ];
 
 const tencentModels = [

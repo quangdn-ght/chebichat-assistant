@@ -458,7 +458,8 @@ const vi: PartialLocaleType = {
   },
   Store: {
     DefaultTopic: "Trò chuyện mới",
-    BotHello: "Có thể giúp gì cho bạn?",
+    BotHello:
+      "Xin chào! Tôi là trợ lý AI ChebiChat của bạn, có thể giúp gì cho bạn?",
     Error: "Đã xảy ra lỗi, vui lòng thử lại sau",
     Prompt: {
       History: (content: string) =>

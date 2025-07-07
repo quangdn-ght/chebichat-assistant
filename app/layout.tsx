@@ -8,11 +8,12 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import { getServerSideConfig } from "./config/server";
 
+const TITLE = "Chebi Chat - Trợ lý AI học tiếng Trung";
 export const metadata: Metadata = {
-  title: "NextChat",
-  description: "Your personal ChatGPT Chat Bot.",
+  title: TITLE,
+  description: TITLE,
   appleWebApp: {
-    title: "NextChat",
+    title: TITLE,
     statusBarStyle: "default",
   },
 };
@@ -34,6 +35,10 @@ export default function RootLayout({
 }) {
   const serverConfig = getServerSideConfig();
 
+  // Log server configuration for debugging
+  // console.log("Server Configuration:");
+  // console.log(serverConfig);
+
   return (
     <html lang="en">
       <head>
@@ -51,6 +56,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+
         {serverConfig?.isVercel && (
           <>
             <SpeedInsights />
