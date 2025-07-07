@@ -1,21 +1,54 @@
 // /app/api/auth/check/route.ts
-import { NextRequest } from "next/server";
-import { checkAuth } from "../../supabase";
+import { NextRequest, NextResponse } from "next/server";
+import { checkAuthWithRefresh, getUserInfoFromCookie } from "../../supabase";
 
 export async function GET(req: NextRequest) {
-  const user = await checkAuth(req);
+  try {
+    const authResult = await checkAuthWithRefresh(req);
+    const userInfo = getUserInfoFromCookie(req);
 
-  console.log("[Auth] user ", user);
+    console.log("[Auth Check] user:", authResult.user?.email || "none");
 
-  if (!user) {
-    return new Response(JSON.stringify({ authenticated: false }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
+    if (!authResult.user) {
+      return NextResponse.json(
+        {
+          authenticated: false,
+          error: "No valid authentication found",
+        },
+        { status: 401 },
+      );
+    }
+
+    // Create response
+    const response = NextResponse.json({
+      authenticated: true,
+      user: authResult.user,
+      userInfo: userInfo, // Include cached user info for quick access
     });
-  }
 
-  return new Response(JSON.stringify({ authenticated: true, user }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+    // If token was refreshed, merge the refreshed cookies
+    if (authResult.needsRefresh && authResult.response) {
+      // Copy cookies from refresh response
+      authResult.response.cookies.getAll().forEach((cookie) => {
+        response.cookies.set(cookie.name, cookie.value, {
+          httpOnly: cookie.httpOnly,
+          secure: cookie.secure,
+          sameSite: cookie.sameSite,
+          maxAge: cookie.maxAge,
+          path: cookie.path,
+        });
+      });
+    }
+
+    return response;
+  } catch (error) {
+    console.error("[Auth Check] Error:", error);
+    return NextResponse.json(
+      {
+        authenticated: false,
+        error: "Authentication check failed",
+      },
+      { status: 500 },
+    );
+  }
 }

@@ -102,6 +102,7 @@ export enum StoreKey {
   Sync = "sync",
   SdList = "sd-list",
   Mcp = "mcp-store",
+  Auth = "auth-store",
 }
 
 export const DEFAULT_SIDEBAR_WIDTH = 300;

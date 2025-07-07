@@ -2,7 +2,7 @@
 #   git config --global user.name "quangdn-ght"
 
 git add .
-git commit -m "loi he thong"
+git commit -m "cap nhat auth he thong de nhung voi chebichat"
 git push
 
 # mdZddHXcuzsB0Akk

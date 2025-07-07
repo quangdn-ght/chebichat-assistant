@@ -47,7 +47,35 @@ export function createPersistStore<T extends object, M>(
   // Gán lại hàm onRehydrateStorage để đánh dấu đã hydrate khi khôi phục dữ liệu
   persistOptions.onRehydrateStorage = (state) => {
     oldOonRehydrateStorage?.(state);
-    return () => state.setHasHydrated(true);
+    return async (state, error) => {
+      if (error) {
+        console.error(
+          `[Store] Hydration failed for ${persistOptions.name}:`,
+          error,
+        );
+      } else {
+        console.log(`[Store] Successfully hydrated ${persistOptions.name}`);
+
+        // Check IndexedDB health on first hydration
+        if (typeof window !== "undefined") {
+          try {
+            const { indexedDBStorage } = await import("./indexedDB-storage");
+            const health = await indexedDBStorage.checkHealth();
+            if (!health.indexedDB) {
+              console.warn(
+                `[Store] IndexedDB unavailable for ${persistOptions.name}, using localStorage fallback`,
+              );
+            }
+          } catch (err) {
+            console.warn(`[Store] Storage health check failed:`, err);
+          }
+        }
+      }
+
+      if (state) {
+        state.setHasHydrated(true);
+      }
+    };
   };
 
   // Tạo store với zustand, kết hợp các middleware và phương thức bổ sung

@@ -8,6 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import { getServerSideConfig } from "./config/server";
 import SyncOnFirstLoad from "./SyncOnFirstLoad";
+import StorageInitializer from "./components/storage-initializer";
 
 const TITLE = "Chebi Chat - Trợ lý AI học tiếng Trung";
 export const metadata: Metadata = {
@@ -57,6 +58,9 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+
+        {/* Storage System Initialization */}
+        <StorageInitializer />
 
         {serverConfig?.isVercel && (
           <>

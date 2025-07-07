@@ -1458,7 +1458,7 @@ function _Chat() {
 
   const autoFocus = isIOS() ? false : !isMobileScreen; // wont auto focus on mobile screen
 
-  console.log("tu dong focus:", autoFocus);
+  // console.log("tu dong focus:", autoFocus);
 
   const showMaxIcon = !isMobileScreen && !clientConfig?.isApp;
 
