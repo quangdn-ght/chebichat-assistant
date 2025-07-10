@@ -33,6 +33,36 @@ const isApp = !!getClientConfig()?.isApp;
 // Định nghĩa kiểu dữ liệu cho SyncStore dựa trên useSyncStore
 export type SyncStore = GetStoreState<typeof useSyncStore>;
 
+/**
+ * Get user-specific storage key from the server
+ * This will return user email-based key if authenticated, or default key if not
+ */
+async function getUserStorageKey(): Promise<string> {
+  try {
+    const response = await fetch("/api/auth/storage-key", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(
+        "[Sync] Got storage key:",
+        data.storageKey,
+        "authenticated:",
+        data.authenticated,
+      );
+      return data.storageKey;
+    } else {
+      console.warn("[Sync] Failed to get storage key from API, using default");
+      return STORAGE_KEY;
+    }
+  } catch (error) {
+    console.error("[Sync] Error fetching storage key:", error);
+    return STORAGE_KEY;
+  }
+}
+
 // Trạng thái mặc định cho việc đồng bộ
 const DEFAULT_SYNC_STATE = {
   provider: ProviderType.UpStash as ProviderType, // Nhà cung cấp mặc định là UpStash
@@ -113,13 +143,28 @@ export const useSyncStore = createPersistStore(
       const localState = getLocalAppState();
       const provider = get().provider;
       const config = get()[provider];
+
+      // Get user-specific storage key
+      const userStorageKey = await getUserStorageKey();
+
+      // Create a config copy with user-specific storage key
+      const userConfig = { ...config, username: userStorageKey };
+
+      // Update the store with the user-specific storage key for UpStash
+      if (provider === ProviderType.UpStash) {
+        set((state) => ({
+          ...state,
+          upstash: { ...state.upstash, username: userStorageKey },
+        }));
+      }
+
       const client = this.getClient();
 
       try {
-        const remoteState = await client.get(config.username);
+        const remoteState = await client.get(userStorageKey);
         if (!remoteState || remoteState === "") {
           // Nếu cloud chưa có dữ liệu thì đẩy dữ liệu local lên cloud
-          await client.set(config.username, JSON.stringify(localState));
+          await client.set(userStorageKey, JSON.stringify(localState));
           console.log(
             "[Sync] Remote state is empty, using local state instead.",
           );
@@ -127,7 +172,7 @@ export const useSyncStore = createPersistStore(
         } else {
           // Nếu cloud đã có dữ liệu thì merge với local
           const parsedRemoteState = JSON.parse(
-            await client.get(config.username),
+            await client.get(userStorageKey),
           ) as AppState;
           mergeAppState(localState, parsedRemoteState);
           setLocalAppState(localState);
@@ -138,7 +183,7 @@ export const useSyncStore = createPersistStore(
       }
 
       // Đẩy dữ liệu đã merge lên cloud
-      await client.set(config.username, JSON.stringify(localState));
+      await client.set(userStorageKey, JSON.stringify(localState));
 
       this.markSyncTime();
     },

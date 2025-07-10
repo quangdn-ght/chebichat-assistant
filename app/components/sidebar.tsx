@@ -13,6 +13,8 @@ import MaskIcon from "../icons/mask.svg";
 import McpIcon from "../icons/mcp.svg";
 import DragIcon from "../icons/drag.svg";
 import DiscoveryIcon from "../icons/discovery.svg";
+import SyncIcon from "../icons/sync.svg";
+import SearchIcon from "../icons/search.svg";
 
 import Locale from "../locales";
 
@@ -34,11 +36,24 @@ import clsx from "clsx";
 import { isMcpEnabled } from "../mcp/actions";
 import { useSyncStore } from "../store/sync";
 
+// Enhanced DISCOVERY array with better descriptions and icons
 const DISCOVERY = [
   // { name: Locale.Plugin.Name, path: Path.Plugins },
   // { name: "Stable Diffusion", path: Path.Sd },
-  { name: Locale.UI.Sync, path: "/sync" },
-  { name: Locale.SearchChat.Page.Title, path: Path.SearchChat },
+  {
+    name: Locale.UI.Sync,
+    path: "/sync",
+    icon: SyncIcon,
+    description:
+      "🔄 Sync your chat data to cloud storage for backup and sharing across devices",
+  },
+  {
+    name: Locale.SearchChat.Page.Title,
+    path: Path.SearchChat,
+    icon: SearchIcon,
+    description:
+      "🔍 Search through your entire chat history to find specific conversations",
+  },
 ];
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
@@ -230,6 +245,7 @@ export function SideBar(props: { className?: string }) {
   useHotKey();
   const { onDragStart, shouldNarrow } = useDragSideBar();
   const [showDiscoverySelector, setshowDiscoverySelector] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
   const navigate = useNavigate();
   const config = useAppConfig();
   const chatStore = useChatStore();
@@ -301,26 +317,36 @@ export function SideBar(props: { className?: string }) {
         {/* Hiển thị selector khi người dùng bấm vào Discovery */}
         {showDiscoverySelector && (
           <Selector
-            items={[
-              ...DISCOVERY.map((item) => {
-                return {
-                  title: item.name,
-                  value: item.path,
-                };
-              }),
-            ]}
+            items={DISCOVERY.map((item) => {
+              const IconComponent = item.icon;
+              const isSync = item.path === "/sync";
+              return {
+                title: isSync && syncLoading ? "Syncing..." : item.name,
+                subTitle:
+                  isSync && syncLoading
+                    ? "⏳ Synchronizing your data..."
+                    : item.description,
+                value: item.path,
+                icon: <IconComponent />,
+                disable: syncLoading,
+              };
+            })}
             onClose={() => setshowDiscoverySelector(false)}
             // dong bo du lieu voi cloud
             onSelection={async (s) => {
               console.log(s[0]);
               if (s[0] == "/sync") {
+                setSyncLoading(true);
                 try {
                   await syncStore.sync();
                   console.log("Dong bo thanh cong ");
-                  showToast(Locale.Settings.Sync.Success);
+                  showToast("✅ " + Locale.Settings.Sync.Success);
                 } catch (e) {
-                  showToast(Locale.Settings.Sync.Fail);
+                  showToast("❌ " + Locale.Settings.Sync.Fail);
                   console.error("[Sync]", e);
+                } finally {
+                  setSyncLoading(false);
+                  setshowDiscoverySelector(false);
                 }
               } else {
                 navigate(s[0], { state: { fromHome: true } });

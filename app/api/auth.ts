@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getServerSideConfig } from "../config/server";
 import md5 from "spark-md5";
 import { ACCESS_CODE_PREFIX, ModelProvider } from "../constant";
+import { checkAuth } from "./supabase";
 
 function getIP(req: NextRequest) {
   let ip = req.ip ?? req.headers.get("x-real-ip");
@@ -126,4 +127,57 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
   return {
     error: false,
   };
+}
+
+/**
+ * Check if user is logged in and return user information
+ * This function can be used to get user email for storage key
+ */
+export async function checkUserAuth(req: NextRequest) {
+  try {
+    const user = await checkAuth(req);
+
+    if (!user) {
+      console.log("[Auth] User not authenticated");
+      return {
+        authenticated: false,
+        user: null,
+        storageKey: null,
+      };
+    }
+
+    // Use user email as storage key for UpStash Redis
+    const storageKey = user.email ? `user-${user.email}` : `user-${user.id}`;
+
+    console.log("[Auth] User authenticated:", user.email || user.id);
+    console.log("[Auth] Storage key:", storageKey);
+
+    return {
+      authenticated: true,
+      user: user,
+      storageKey: storageKey,
+    };
+  } catch (error) {
+    console.error("[Auth] Error checking user authentication:", error);
+    return {
+      authenticated: false,
+      user: null,
+      storageKey: null,
+    };
+  }
+}
+
+/**
+ * Get user-specific storage key for syncing data to UpStash Redis
+ * If user is not authenticated, returns default storage key
+ */
+export async function getUserStorageKey(req: NextRequest): Promise<string> {
+  const authResult = await checkUserAuth(req);
+
+  if (authResult.authenticated && authResult.storageKey) {
+    return authResult.storageKey;
+  }
+
+  // Fallback to default storage key if user is not authenticated
+  return "chebichat-backup"; // Default STORAGE_KEY
 }

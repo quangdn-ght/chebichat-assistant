@@ -51,33 +51,21 @@ export function createUpstashClient(store: SyncStore) {
       console.log("[Upstash] set key = ", key, res.status, res.statusText);
     },
 
-    async get(storageKey?: string) {
-      const storeKey =
-        storageKey ||
-        (config.username.length === 0 ? STORAGE_KEY : config.username);
-      const chunkCountKey = `${storeKey}-chunk-count`;
-      const chunkIndexKey = (i: number) => `${storeKey}-chunk-${i}`;
-
+    async get() {
       const chunkCount = Number(await this.redisGet(chunkCountKey));
       if (!Number.isInteger(chunkCount)) return;
 
-      const chunksArray = await Promise.all(
+      const chunks = await Promise.all(
         new Array(chunkCount)
           .fill(0)
           .map((_, i) => this.redisGet(chunkIndexKey(i))),
       );
-      console.log("[Upstash] get full chunks", chunksArray);
-      return chunksArray.join("");
+      console.log("[Upstash] get full chunks", chunks);
+      return chunks.join("");
     },
 
-    async set(storageKey: string, value: string) {
-      const storeKey =
-        storageKey ||
-        (config.username.length === 0 ? STORAGE_KEY : config.username);
-      const chunkCountKey = `${storeKey}-chunk-count`;
-      const chunkIndexKey = (i: number) => `${storeKey}-chunk-${i}`;
-
-      // upstash limit the max request size which is 1Mb for "Free" and "Pay as you go"
+    async set(_: string, value: string) {
+      // upstash limit the max request size which is 1Mb for “Free” and “Pay as you go”
       // so we need to split the data to chunks
       let index = 0;
       for await (const chunk of chunks(value)) {

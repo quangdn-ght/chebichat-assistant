@@ -1,9 +1,8 @@
 export const ALIBABA_BASE_URL = "https://dashscope-intl.aliyuncs.com";
 export const ALIBABA_PATH = `compatible-mode/v1/chat/completions`;
 // The key used to store the last chat ID in local storage
-export const UPSTASH_ENDPOINT = "https://grand-skink-54044.upstash.io";
-export const UPSTASH_APIKEY =
-  "AdMcAAIjcDE2OTgyYWE0N2VhYjQ0ZDEwODJlZmNjYWEwZjRkNTlhZHAxMA";
+export const UPSTASH_ENDPOINT = process.env.KV_REST_API_URL || "";
+export const UPSTASH_APIKEY = process.env.KV_REST_API_TOKEN || "";
 export const STORAGE_KEY = "chebichat-backup";
 
 export const AUTHEN_PAGE = "https://chebichat.com/auth/login";

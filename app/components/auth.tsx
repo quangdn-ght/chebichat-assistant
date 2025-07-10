@@ -11,7 +11,7 @@ export function AuthPage() {
           const redirectUrl =
             config.authLogin || "https://chebichat.ai/auth/login";
           console.log("AuthPage: Redirecting to auth URL:", redirectUrl);
-          window.location.replace(redirectUrl);
+          // window.location.replace(redirectUrl);
         } else {
           // Fallback redirect if config fetch fails
           window.location.replace("https://chebichat.ai/auth/login");
@@ -23,7 +23,7 @@ export function AuthPage() {
       }
     };
 
-    fetchAuthConfigAndRedirect();
+    // fetchAuthConfigAndRedirect();
   }, []);
 
   // Return minimal loading UI while redirect is happening

@@ -88,6 +88,7 @@ import { useMaskStore } from "../store/mask";
 import { ProviderType } from "../utils/cloud";
 import { TTSConfigList } from "./tts-config";
 import { RealtimeConfigList } from "./realtime-chat/realtime-config";
+import { useUserStorageKey } from "../hooks/useUserStorageKey";
 
 function EditPromptModal(props: { id: string; onClose: () => void }) {
   const promptStore = usePromptStore();
@@ -326,6 +327,7 @@ function CheckButton() {
 
 function SyncConfigModal(props: { onClose?: () => void }) {
   const syncStore = useSyncStore();
+  const { storageKey, authenticated, userEmail } = useUserStorageKey();
 
   return (
     <div className="modal-mask">
@@ -459,7 +461,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
               <input
                 type="text"
                 value={syncStore.upstash.username}
-                placeholder={STORAGE_KEY}
+                placeholder={authenticated ? storageKey : STORAGE_KEY}
                 onChange={(e) => {
                   syncStore.update(
                     (config) =>
@@ -467,6 +469,19 @@ function SyncConfigModal(props: { onClose?: () => void }) {
                   );
                 }}
               ></input>
+              <div
+                style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}
+              >
+                {authenticated && userEmail ? (
+                  <>
+                    🔒 Logged in as: {userEmail}
+                    <br />
+                    💾 Your data will be stored with key: {storageKey}
+                  </>
+                ) : (
+                  "ℹ️ Not logged in - using default storage key"
+                )}
+              </div>
             </ListItem>
             <ListItem title={Locale.Settings.Sync.Config.UpStash.Password}>
               <PasswordInput
