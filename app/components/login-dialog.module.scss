@@ -1,0 +1,259 @@
+@import "../styles/animation.scss";
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+  margin: auto;
+  
+  @media (max-width: 480px) {
+    margin: 20px auto;
+    border-radius: 20px;
+    max-width: none;
+  }
+}
+
+.modal-header {
+  text-align: center;
+  padding: 40px 30px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  position: relative;
+  
+  @media (max-width: 480px) {
+    padding: 30px 20px 25px;
+  }
+}
+
+.modal-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  animation: bounce 0.6s ease-out 0.3s both;
+  
+  svg {
+    width: 32px;
+    height: 32px;
+    fill: white;
+  }
+  
+  @media (max-width: 480px) {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  line-height: 1.3;
+  
+  @media (max-width: 480px) {
+    font-size: 20px;
+    margin: 0 0 10px;
+  }
+}
+
+.modal-subtitle {
+  font-size: 16px;
+  margin: 0;
+  opacity: 0.9;
+  line-height: 1.4;
+  
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
+}
+
+.modal-body {
+  padding: 40px 30px;
+  text-align: center;
+  
+  @media (max-width: 480px) {
+    padding: 30px 20px;
+  }
+}
+
+.login-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 14px 24px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+}
+
+.login-icon {
+  font-size: 18px;
+  transition: transform 0.3s ease;
+  
+  &.loading {
+    animation: spin 1s linear infinite;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
+}
+
+.modal-footer {
+  padding: 0 30px 30px;
+  text-align: center;
+  
+  @media (max-width: 480px) {
+    padding: 0 20px 25px;
+  }
+}
+
+.cancel-button {
+  background: transparent;
+  color: var(--text-color-secondary);
+  border: none;
+  padding: 12px 24px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: var(--hover-color);
+    color: var(--text-color);
+  }
+  
+  @media (max-width: 480px) {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}
+
+// Dark mode support
+.dark {
+  .modal-content {
+    background: var(--gray);
+    color: var(--white);
+  }
+  
+  .cancel-button {
+    color: var(--text-color-secondary);
+    
+    &:hover {
+      background: var(--hover-color);
+      color: var(--white);
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

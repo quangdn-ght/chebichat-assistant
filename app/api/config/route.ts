@@ -15,6 +15,7 @@ const DANGER_CONFIG = {
   customModels: serverConfig.customModels,
   defaultModel: serverConfig.defaultModel,
   visionModels: serverConfig.visionModels,
+  authLogin: process.env.AUTH_LOGIN_URL || process.env.AUTHEN_PAGE || "/login",
 };
 
 declare global {

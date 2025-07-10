@@ -26,11 +26,25 @@ import {
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
 import { AuthPage } from "./auth";
+import { AuthWrapper } from "./auth-wrapper";
 import { getClientConfig } from "../config/client";
 import { type ClientApi, getClientApi } from "../client/api";
 import { useAccessStore } from "../store";
 import clsx from "clsx";
 import { initializeMcpSystem, isMcpEnabled } from "../mcp/actions";
+
+function ConditionalAuthWrapper({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const isAuth = location.pathname === Path.Auth;
+  const isLogin = location.pathname.startsWith("/login");
+
+  // Don't wrap auth/login pages with AuthWrapper to avoid circular redirect
+  if (isAuth || isLogin) {
+    return <>{children}</>;
+  }
+
+  return <AuthWrapper>{children}</AuthWrapper>;
+}
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -265,7 +279,9 @@ export function Home() {
   return (
     <ErrorBoundary>
       <Router>
-        <Screen />
+        <ConditionalAuthWrapper>
+          <Screen />
+        </ConditionalAuthWrapper>
       </Router>
     </ErrorBoundary>
   );
