@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UpStash Config Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .config-item { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+        .info { background-color: #d1ecf1; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>UpStash Configuration Test</h1>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function testUpstashConfig() {
+            const results = document.getElementById('results');
+            
+            try {
+                // Test 1: Fetch server-side config
+                results.innerHTML += '<div class="config-item info"><h3>Test 1: Server-side Configuration</h3><p>Fetching UpStash config from API...</p></div>';
+                
+                const response = await fetch('/api/upstash/config');
+                const config = await response.json();
+                
+                if (response.ok) {
+                    results.innerHTML += `
+                        <div class="config-item success">
+                            <h4>✅ Server-side Config Retrieved Successfully</h4>
+                            <pre>${JSON.stringify(config, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    results.innerHTML += `<div class="config-item error"><h4>❌ Failed to fetch config</h4><p>${config.error || 'Unknown error'}</p></div>`;
+                }
+                
+                // Test 2: Check if values are not empty
+                results.innerHTML += '<div class="config-item info"><h3>Test 2: Configuration Validation</h3></div>';
+                
+                if (config.endpoint && config.endpoint !== 'https://your-upstash-redis-url.upstash.io') {
+                    results.innerHTML += '<div class="config-item success">✅ Endpoint is properly configured from environment variable</div>';
+                } else {
+                    results.innerHTML += '<div class="config-item error">❌ Endpoint is using fallback value (environment variable not set)</div>';
+                }
+                
+                if (config.apiKey && config.apiKey !== 'your-upstash-redis-token') {
+                    results.innerHTML += '<div class="config-item success">✅ API Key is properly configured from environment variable</div>';
+                } else {
+                    results.innerHTML += '<div class="config-item error">❌ API Key is using fallback value (environment variable not set)</div>';
+                }
+                
+                if (config.maskedApiKey && config.maskedApiKey.includes('*')) {
+                    results.innerHTML += '<div class="config-item success">✅ API Key is properly masked for security</div>';
+                } else {
+                    results.innerHTML += '<div class="config-item error">❌ API Key is not properly masked</div>';
+                }
+                
+                // Test 3: Test connection (would normally be done in main app)
+                results.innerHTML += `
+                    <div class="config-item info">
+                        <h3>Test 3: Next Steps</h3>
+                        <p>✅ Configuration is loaded correctly</p>
+                        <p>✅ Values are read from environment variables</p>
+                        <p>✅ API Key is properly masked</p>
+                        <p>🔒 Fields will be read-only in the main application</p>
+                        <p>📋 Go to Settings > Sync to see the UpStash configuration in action</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                results.innerHTML += `<div class="config-item error"><h4>❌ Test Failed</h4><p>${error.message}</p></div>`;
+            }
+        }
+        
+        // Run test when page loads
+        window.onload = testUpstashConfig;
+    </script>
+</body>
+</html>

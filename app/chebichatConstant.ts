@@ -1,8 +1,17 @@
 export const ALIBABA_BASE_URL = "https://dashscope-intl.aliyuncs.com";
 export const ALIBABA_PATH = `compatible-mode/v1/chat/completions`;
 // The key used to store the last chat ID in local storage
-export const UPSTASH_ENDPOINT = process.env.KV_REST_API_URL || "";
-export const UPSTASH_APIKEY = process.env.KV_REST_API_TOKEN || "";
+
+// Server-side constants (only available on server)
+export const UPSTASH_ENDPOINT_SERVER =
+  process.env.KV_REST_API_URL || "https://your-upstash-redis-url.upstash.io";
+export const UPSTASH_APIKEY_SERVER =
+  process.env.KV_REST_API_TOKEN || "your-upstash-redis-token";
+
+// Client-side fallback constants (used when server values are not available)
+export const UPSTASH_ENDPOINT = "https://your-upstash-redis-url.upstash.io";
+export const UPSTASH_APIKEY = "your-upstash-redis-token";
+
 export const STORAGE_KEY = "chebichat-backup";
 
 export const AUTHEN_PAGE = "https://chebichat.com/auth/login";

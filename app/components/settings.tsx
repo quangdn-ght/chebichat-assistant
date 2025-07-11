@@ -75,6 +75,8 @@ import {
   ChatGLM,
   DeepSeek,
   SiliconFlow,
+  UPSTASH_ENDPOINT,
+  UPSTASH_APIKEY,
 } from "../constant";
 import { Prompt, SearchService, usePromptStore } from "../store/prompt";
 import { ErrorBoundary } from "./error";
@@ -287,8 +289,14 @@ function DangerItems() {
 function CheckButton() {
   const syncStore = useSyncStore();
 
-  const couldCheck = useMemo(() => {
-    return syncStore.cloudSync();
+  const [couldCheck, setCouldCheck] = useState(false);
+
+  useEffect(() => {
+    const checkSyncCapability = async () => {
+      const canSync = await syncStore.cloudSync();
+      setCouldCheck(canSync);
+    };
+    checkSyncCapability();
   }, [syncStore]);
 
   const [checkState, setCheckState] = useState<
@@ -328,6 +336,37 @@ function CheckButton() {
 function SyncConfigModal(props: { onClose?: () => void }) {
   const syncStore = useSyncStore();
   const { storageKey, authenticated, userEmail } = useUserStorageKey();
+
+  // State for UpStash configuration
+  const [upstashConfig, setUpstashConfig] = useState<{
+    endpoint: string;
+    maskedApiKey: string;
+  } | null>(null);
+
+  // Fetch UpStash configuration on component mount
+  useEffect(() => {
+    const fetchUpstashConfig = async () => {
+      try {
+        const response = await fetch("/api/upstash/config");
+        if (response.ok) {
+          const config = await response.json();
+          setUpstashConfig({
+            endpoint: config.endpoint,
+            maskedApiKey: config.maskedApiKey,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch UpStash config:", error);
+        // Use fallback values
+        setUpstashConfig({
+          endpoint: UPSTASH_ENDPOINT,
+          maskedApiKey: UPSTASH_APIKEY,
+        });
+      }
+    };
+
+    fetchUpstashConfig();
+  }, []);
 
   return (
     <div className="modal-mask">
@@ -447,14 +486,22 @@ function SyncConfigModal(props: { onClose?: () => void }) {
             <ListItem title={Locale.Settings.Sync.Config.UpStash.Endpoint}>
               <input
                 type="text"
-                value={syncStore.upstash.endpoint}
-                onChange={(e) => {
-                  syncStore.update(
-                    (config) =>
-                      (config.upstash.endpoint = e.currentTarget.value),
-                  );
+                value={upstashConfig?.endpoint || UPSTASH_ENDPOINT}
+                readOnly
+                disabled
+                style={{
+                  backgroundColor: "#f5f5f5",
+                  color: "#666",
+                  cursor: "not-allowed",
+                  opacity: 0.7,
                 }}
+                title="This value is configured by the system and cannot be changed"
               ></input>
+              <div
+                style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}
+              >
+                🔒 System configured (read-only)
+              </div>
             </ListItem>
 
             <ListItem title={Locale.Settings.Sync.Config.UpStash.UserName}>
@@ -485,13 +532,22 @@ function SyncConfigModal(props: { onClose?: () => void }) {
             </ListItem>
             <ListItem title={Locale.Settings.Sync.Config.UpStash.Password}>
               <PasswordInput
-                value={syncStore.upstash.apiKey}
-                onChange={(e) => {
-                  syncStore.update(
-                    (config) => (config.upstash.apiKey = e.currentTarget.value),
-                  );
+                value={upstashConfig?.maskedApiKey || UPSTASH_APIKEY}
+                readOnly
+                disabled
+                style={{
+                  backgroundColor: "#f5f5f5",
+                  color: "#666",
+                  cursor: "not-allowed",
+                  opacity: 0.7,
                 }}
+                title="This value is configured by the system and cannot be changed"
               ></PasswordInput>
+              <div
+                style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}
+              >
+                🔒 System configured (read-only)
+              </div>
             </ListItem>
           </List>
         )}
@@ -505,8 +561,15 @@ function SyncItems() {
   const chatStore = useChatStore();
   const promptStore = usePromptStore();
   const maskStore = useMaskStore();
-  const couldSync = useMemo(() => {
-    return syncStore.cloudSync();
+
+  const [couldSync, setCouldSync] = useState(false);
+
+  useEffect(() => {
+    const checkSyncCapability = async () => {
+      const canSync = await syncStore.cloudSync();
+      setCouldSync(canSync);
+    };
+    checkSyncCapability();
   }, [syncStore]);
 
   const [showSyncConfigModal, setShowSyncConfigModal] = useState(false);

@@ -377,15 +377,17 @@ export function SideBar(props: { className?: string }) {
                 }}
               />
             </div>
-            <div className={styles["sidebar-action"]}>
-              <Link to={Path.Settings}>
-                <IconButton
-                  aria={Locale.Settings.Title}
-                  icon={<SettingsIcon />}
-                  shadow
-                />
-              </Link>
-            </div>
+            {process.env.NODE_ENV === "development" && (
+              <div className={styles["sidebar-action"]}>
+                <Link to={Path.Settings}>
+                  <IconButton
+                    aria={Locale.Settings.Title}
+                    icon={<SettingsIcon />}
+                    shadow
+                  />
+                </Link>
+              </div>
+            )}
 
             {/* <div className={styles["sidebar-action"]}>
               <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
