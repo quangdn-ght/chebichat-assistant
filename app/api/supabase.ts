@@ -5,14 +5,25 @@ const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY!;
 
 export async function checkAuth(req: NextRequest) {
-  // Use NextRequest.cookies API
-  const authToken = req.cookies.get("sb-access-token")?.value;
+  // First try to get token from cookies (same-domain authentication)
+  let authToken = req.cookies.get("sb-access-token")?.value;
+
+  // If no cookie token, try to get from Authorization header (cross-domain authentication)
+  if (!authToken) {
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      authToken = authHeader.replace("Bearer ", "").trim();
+      console.log("[Supabase] Using Authorization header token");
+    }
+  }
 
   // console.log("[Supabase] authToken", authToken);
 
   if (!authToken) {
     // Không tìm thấy token xác thực
-    console.log("[Supabase] No auth token found");
+    console.log(
+      "[Supabase] No auth token found in cookies or Authorization header",
+    );
     return null;
   }
 
@@ -49,11 +60,23 @@ export async function checkAuthWithRefresh(req: NextRequest): Promise<{
   response?: NextResponse;
   needsRefresh?: boolean;
 }> {
-  const authToken = req.cookies.get("sb-access-token")?.value;
+  // First try to get tokens from cookies (same-domain authentication)
+  let authToken = req.cookies.get("sb-access-token")?.value;
   const refreshToken = req.cookies.get("sb-refresh-token")?.value;
 
+  // If no cookie token, try to get from Authorization header (cross-domain authentication)
   if (!authToken) {
-    console.log("[Supabase] No auth token found");
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      authToken = authHeader.replace("Bearer ", "").trim();
+      console.log("[Supabase] Using Authorization header token for auth check");
+    }
+  }
+
+  if (!authToken) {
+    console.log(
+      "[Supabase] No auth token found in cookies or Authorization header",
+    );
     return { user: null };
   }
 
@@ -148,19 +171,22 @@ export async function checkAuthWithRefresh(req: NextRequest): Promise<{
 }
 
 // Utility function to get user info from cookie (client-side accessible)
+// or from Authorization header if cross-domain
 export function getUserInfoFromCookie(req: NextRequest) {
   const userInfoCookie = req.cookies.get("sb-user-info")?.value;
 
-  if (!userInfoCookie) {
-    return null;
+  if (userInfoCookie) {
+    try {
+      return JSON.parse(userInfoCookie);
+    } catch (err) {
+      console.error("[Supabase] Error parsing user info cookie:", err);
+    }
   }
 
-  try {
-    return JSON.parse(userInfoCookie);
-  } catch (err) {
-    console.error("[Supabase] Error parsing user info cookie:", err);
-    return null;
-  }
+  // For cross-domain scenarios, we can't rely on cookies
+  // The calling code should use checkAuth() to get user info from the token
+  console.log("[Supabase] No user info cookie found (possibly cross-domain)");
+  return null;
 }
 
 // Middleware helper to protect routes

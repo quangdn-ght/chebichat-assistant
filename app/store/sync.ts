@@ -39,9 +39,37 @@ export type SyncStore = GetStoreState<typeof useSyncStore>;
  */
 async function getUserStorageKey(): Promise<string> {
   try {
+    // Get access token from cookies for Authorization header
+    const getAccessToken = (): string | null => {
+      if (typeof window === "undefined") return null;
+
+      try {
+        const accessTokenCookie = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("sb-access-token="));
+
+        if (accessTokenCookie) {
+          return decodeURIComponent(accessTokenCookie.split("=")[1]);
+        }
+      } catch (error) {
+        console.error("Error reading access token cookie:", error);
+      }
+
+      return null;
+    };
+
+    const token = getAccessToken();
+    const headers: Record<string, string> = {};
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+      console.log("[Sync] Using Authorization header for cross-domain auth");
+    }
+
     const response = await fetch("/api/auth/storage-key", {
       method: "GET",
       credentials: "include",
+      headers: headers,
     });
 
     if (response.ok) {

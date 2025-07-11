@@ -11,8 +11,24 @@ import { getUserStorageKey, checkUserAuth } from "../../auth";
  */
 export async function GET(req: NextRequest) {
   try {
+    console.log("[Storage Key API] Processing request from:", req.url);
+    console.log(
+      "[Storage Key API] Has Authorization header:",
+      !!req.headers.get("Authorization"),
+    );
+    console.log(
+      "[Storage Key API] Has auth cookie:",
+      !!req.cookies.get("sb-access-token"),
+    );
+
     const authResult = await checkUserAuth(req);
     const storageKey = await getUserStorageKey(req);
+
+    console.log("[Storage Key API] Auth result:", {
+      authenticated: authResult.authenticated,
+      userEmail: authResult.user?.email,
+      storageKey: storageKey,
+    });
 
     return NextResponse.json({
       success: true,

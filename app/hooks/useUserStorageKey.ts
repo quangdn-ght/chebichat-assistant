@@ -9,6 +9,44 @@ interface StorageKeyInfo {
 }
 
 /**
+ * Get access token from cookies (client-side)
+ */
+function getAccessTokenFromCookies(): string | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const accessTokenCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("sb-access-token="));
+
+    if (accessTokenCookie) {
+      return decodeURIComponent(accessTokenCookie.split("=")[1]);
+    }
+  } catch (error) {
+    console.error("Error reading access token cookie:", error);
+  }
+
+  return null;
+}
+
+/**
+ * Create headers with Authorization if token is available
+ */
+function createAuthHeaders(): Record<string, string> {
+  const token = getAccessTokenFromCookies();
+  const headers: Record<string, string> = {};
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+    console.log(
+      "[useUserStorageKey] Using Authorization header for cross-domain auth",
+    );
+  }
+
+  return headers;
+}
+
+/**
  * Hook to get user-specific storage key for UpStash Redis sync
  * Returns user email-based key if authenticated, or default key if not
  */
@@ -29,6 +67,7 @@ export function useUserStorageKey(): StorageKeyInfo {
         const response = await fetch("/api/auth/storage-key", {
           method: "GET",
           credentials: "include",
+          headers: createAuthHeaders(),
         });
 
         if (response.ok) {
@@ -67,6 +106,7 @@ export async function getUserStorageKey(): Promise<string> {
     const response = await fetch("/api/auth/storage-key", {
       method: "GET",
       credentials: "include",
+      headers: createAuthHeaders(),
     });
 
     if (response.ok) {
