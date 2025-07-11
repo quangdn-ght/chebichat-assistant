@@ -165,10 +165,14 @@ export function RealtimeChat({
             for await (const text of content.textChunks()) {
               botMessage.content += text;
             }
+            // update message.content
+            console.log("botMessage content:", botMessage.content);
           } else if (content.type === "audio") {
             const textTask = async () => {
               for await (const text of content.transcriptChunks()) {
                 botMessage.content += text;
+
+                console.log("text:", text);
               }
             };
             const audioTask = async () => {
