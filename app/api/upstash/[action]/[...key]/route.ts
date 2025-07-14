@@ -47,7 +47,7 @@ async function handle(
 
   const fetchOptions: RequestInit = {
     headers: {
-      authorization: req.headers.get("authorization") ?? "",
+      authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
     },
     body: shouldNotHaveBody ? null : req.body,
     method,

@@ -79,7 +79,7 @@ export class QwenApi implements LLMApi {
       baseUrl = "https://" + baseUrl;
     }
 
-    console.log("[Proxy Endpoint] ", baseUrl, path);
+    // console.log("[Proxy Endpoint] ", baseUrl, path);
 
     return [baseUrl, path].join("/");
   }
@@ -161,37 +161,53 @@ export class QwenApi implements LLMApi {
           .getAsTools(
             useChatStore.getState().currentSession().mask?.plugin || [],
           );
+
         // Gọi hàm streamWithThink để xử lý chat dạng stream (dòng sự kiện server-sent events)
+        // Hàm này hỗ trợ tính năng "thinking" (suy nghĩ) và tool calling cho AI
         return streamWithThink(
-          chatPath,
-          requestPayload,
-          headers,
-          tools as any,
-          funcs,
-          controller,
-          // SSE parse callback for OpenAI-style streaming
+          chatPath, // Đường dẫn API endpoint
+          requestPayload, // Dữ liệu request gửi đến server
+          headers, // Headers cho request
+          tools as any, // Danh sách các tools/plugins có thể sử dụng
+          funcs, // Các hàm callback cho tools
+          controller, // AbortController để hủy request nếu cần
+
+          // ===== CALLBACK 1: SSE Parser =====
+          // Hàm này xử lý từng dòng dữ liệu thô từ Server-Sent Events
           (text: string, runTools: ChatMessageTool[]) => {
-            // Each `text` is a line like: data: {...}
+            // text: Là một dòng dữ liệu thô từ SSE stream, thường có dạng "data: {...}"
+            // runTools: Danh sách các tools đang được thực thi (nếu có)
+
             let json: any;
             try {
+              // Parse dòng JSON từ SSE stream
               json = JSON.parse(text);
             } catch {
+              // Nếu không parse được, trả về nội dung rỗng
               return { isThinking: false, content: "" };
             }
+
+            // Trích xuất nội dung từ response format của Alibaba/Qwen
             const delta = json.choices?.[0]?.delta;
             const content = delta?.content ?? "";
 
-            // You can accumulate content outside if needed
+            // Trả về object với:
+            // - isThinking: false (không phải đang suy nghĩ)
+            // - content: Nội dung text đã được parse
             return {
               isThinking: false,
               content,
             };
           },
+
+          // ===== CALLBACK 2: Tool Call Handler =====
+          // Hàm này xử lý khi AI muốn gọi tool/function
           (
             requestPayload: RequestPayload,
             toolCallMessage: any,
             toolCallResult: any[],
           ) => {
+            // Thêm tool call message và kết quả vào payload để gửi lại server
             requestPayload?.input?.messages?.splice(
               requestPayload?.input?.messages?.length,
               0,
@@ -199,17 +215,52 @@ export class QwenApi implements LLMApi {
               ...toolCallResult,
             );
           },
+
+          // ===== OPTIONS OBJECT =====
           {
             ...options,
-            // Accumulate and render result as it streams
+
+            // ===== CALLBACK 3: onUpdate Handler =====
+            // Hàm này được gọi mỗi khi có nội dung mới được xử lý
             onUpdate: (() => {
-              let accumulated = "";
+              // Closure để tạo accumulator nếu cần
+              // let accumulated = "";
+
+              // Trả về hàm xử lý thực tế
               return (chunk: string, fetchText?: string) => {
-                accumulated += chunk;
-                options.onUpdate?.(accumulated, fetchText ?? "");
+                // ========== GIẢI THÍCH CHI TIẾT chunk và fetchText ==========
+
+                // CHUNK:
+                // - Là phần nội dung TEXT ĐÃ ĐƯỢC XỬ LÝ từ SSE parser callback ở trên
+                // - Đây là nội dung "sạch" đã được parse và extract từ JSON
+                // - Ví dụ: "Xin chào", "Tôi có thể giúp gì", "..." (từng phần của câu trả lời)
+                // - Chunk sẽ được tích lũy để tạo thành câu trả lời hoàn chỉnh
+                // - Được sử dụng để hiển thị nội dung cho người dùng
+
+                // FETCHTEXT:
+                // - Là dữ liệu RAW/THÔNG TIN BỔ SUNG từ quá trình streaming
+                // - Có thể chứa metadata, trạng thái, hoặc thông tin debug
+                // - Thường không được hiển thị trực tiếp cho user
+                // - Có thể là undefined hoặc empty string
+                // - Được sử dụng cho logging, debugging, hoặc xử lý nâng cao
+
+                // SO SÁNH:
+                // chunk = Nội dung chính để hiển thị
+                // fetchText = Thông tin phụ/metadata (thường cho debug)
+
+                // console.log("CHUNK (nội dung chính):", chunk);
+                // console.log("FETCHTEXT (metadata/debug):", fetchText);
+
+                // Gọi callback gốc với chunk (nội dung chính) và fetchText (metadata)
+                options.onUpdate?.(chunk, fetchText ?? "");
               };
             })(),
+
+            // ===== CALLBACK 4: onFinish Handler =====
+            // Được gọi khi stream hoàn thành
             onFinish: (final: string, res: any) => {
+              // final: Toàn bộ nội dung đã được tích lũy
+              // res: Response object từ server
               options.onFinish?.(final, res);
             },
           },

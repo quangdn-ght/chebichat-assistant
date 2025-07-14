@@ -201,9 +201,9 @@ export function PluginPage() {
                       {m.title}@<small>{m.version}</small>
                     </div>
                     <div className={clsx(styles["mask-info"], "one-line")}>
-                      {Locale.Plugin.Item.Info(
+                      {/* {Locale.Plugin.Item.Info(
                         FunctionToolService.add(m).length,
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>

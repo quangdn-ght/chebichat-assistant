@@ -11,14 +11,7 @@ import LoadingIcon from "../icons/three-dots.svg";
 import EditIcon from "../icons/edit.svg";
 import FireIcon from "../icons/fire.svg";
 import EyeIcon from "../icons/eye.svg";
-import DownloadIcon from "../icons/download.svg";
-import UploadIcon from "../icons/upload.svg";
-import ConfigIcon from "../icons/config.svg";
-import ConfirmIcon from "../icons/confirm.svg";
 
-import ConnectionIcon from "../icons/connection.svg";
-import CloudSuccessIcon from "../icons/cloud-success.svg";
-import CloudFailIcon from "../icons/cloud-fail.svg";
 import { trackSettingsPageGuideToCPaymentClick } from "../utils/auth-settings-events";
 import {
   Input,
@@ -29,7 +22,6 @@ import {
   Popover,
   Select,
   showConfirm,
-  showToast,
 } from "./ui-lib";
 import { ModelConfigList } from "./model-config";
 
@@ -65,7 +57,7 @@ import {
   OPENAI_BASE_URL,
   Path,
   RELEASE_URL,
-  STORAGE_KEY,
+  // STORAGE_KEY, // Hidden sync functionality
   ServiceProvider,
   SlotID,
   UPDATE_URL,
@@ -75,8 +67,8 @@ import {
   ChatGLM,
   DeepSeek,
   SiliconFlow,
-  UPSTASH_ENDPOINT,
-  UPSTASH_APIKEY,
+  // UPSTASH_ENDPOINT, // Hidden sync functionality
+  // UPSTASH_APIKEY, // Hidden sync functionality
 } from "../constant";
 import { Prompt, SearchService, usePromptStore } from "../store/prompt";
 import { ErrorBoundary } from "./error";
@@ -84,13 +76,12 @@ import { InputRange } from "./input-range";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarPicker } from "./emoji";
 import { getClientConfig } from "../config/client";
-import { useSyncStore } from "../store/sync";
+// import { useSyncStore } from "../store/sync"; // Hidden sync functionality
 import { nanoid } from "nanoid";
-import { useMaskStore } from "../store/mask";
-import { ProviderType } from "../utils/cloud";
+// import { ProviderType } from "../utils/cloud"; // Hidden sync functionality
 import { TTSConfigList } from "./tts-config";
 import { RealtimeConfigList } from "./realtime-chat/realtime-config";
-import { useUserStorageKey } from "../hooks/useUserStorageKey";
+// import { useUserStorageKey } from "../hooks/useUserStorageKey"; // Hidden sync functionality
 
 function EditPromptModal(props: { id: string; onClose: () => void }) {
   const promptStore = usePromptStore();
@@ -286,6 +277,8 @@ function DangerItems() {
   );
 }
 
+/*
+// Hidden sync functionality - CheckButton component
 function CheckButton() {
   const syncStore = useSyncStore();
 
@@ -332,7 +325,10 @@ function CheckButton() {
     ></IconButton>
   );
 }
+*/
 
+/*
+// Hidden sync functionality - SyncConfigModal component
 function SyncConfigModal(props: { onClose?: () => void }) {
   const syncStore = useSyncStore();
   const { storageKey, authenticated, userEmail } = useUserStorageKey();
@@ -556,6 +552,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
   );
 }
 
+// Hidden sync functionality - SyncItems component
 function SyncItems() {
   const syncStore = useSyncStore();
   const chatStore = useChatStore();
@@ -657,6 +654,7 @@ function SyncItems() {
     </>
   );
 }
+*/
 
 export function Settings() {
   const navigate = useNavigate();
@@ -1779,7 +1777,7 @@ export function Settings() {
           </ListItem>
         </List>
 
-        <SyncItems />
+        {/* <SyncItems /> - Hidden cloud sync functionality */}
 
         <List>
           <ListItem

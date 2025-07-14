@@ -590,9 +590,9 @@ export function MaskPage() {
                   <div className={styles["mask-title"]}>
                     <div className={styles["mask-name"]}>{m.name}</div>
                     <div className={clsx(styles["mask-info"], "one-line")}>
-                      {`${Locale.Mask.Item.Info(m.context.length)} / ${
+                      {/* {`${Locale.Mask.Item.Info(m.context.length)} / ${
                         ALL_LANG_OPTIONS[m.lang]
-                      } / ${m.modelConfig.model}`}
+                      } / ${m.modelConfig.model}`} */}
                     </div>
                   </div>
                 </div>

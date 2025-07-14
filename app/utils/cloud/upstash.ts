@@ -89,7 +89,7 @@ export function createUpstashClient(store: SyncStore) {
 
     headers() {
       return {
-        Authorization: `Bearer ${config.apiKey}`,
+        "Content-Type": "application/json",
       };
     },
     path(path: string, proxyUrl: string = "") {

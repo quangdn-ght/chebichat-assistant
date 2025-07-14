@@ -518,7 +518,8 @@ const vi: PartialLocaleType = {
       Create: "Tạo mới",
     },
     Item: {
-      Info: (count: number) => `Bao gồm ${count} cuộc trò chuyện đã định sẵn`,
+      // Info: (count: number) => `Bao gồm ${count} cuộc trò chuyện đã định sẵn`,
+      Info: "",
       Chat: "Trò chuyện",
       View: "Xem",
       Edit: "Chỉnh sửa",
