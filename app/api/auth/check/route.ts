@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkAuthWithRefresh, getUserInfoFromCookie } from "../../supabase";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const authResult = await checkAuthWithRefresh(req);

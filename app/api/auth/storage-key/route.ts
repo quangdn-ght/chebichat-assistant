@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserStorageKey, checkUserAuth } from "../../auth";
 
+export const dynamic = "force-dynamic";
+
 /**
  * API endpoint to get the user's storage key for syncing data to UpStash Redis
  * GET /api/auth/storage-key
